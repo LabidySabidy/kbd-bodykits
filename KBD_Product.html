@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KBD Body Kits — Product Detail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --red: #CC0000; --black: #0C0C0C; --off-white: #F7F6F4; --mid-grey: #E8E6E2; --text-muted: #7A7570; --text-body: #2A2825; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text-body); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--red); color: white; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--off-white); }
+  ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+  @keyframes slideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+
+  /* Batch 6 — responsive + a11y */
+  @media (max-width: 900px) {
+    /* Generic 3-column → 1-column collapse for product / build / blog grids */
+    [style*="grid-template-columns: repeat(3,"], [style*="grid-template-columns:repeat(3,"],
+    [style*="grid-template-columns: repeat(4,"], [style*="grid-template-columns:repeat(4,"],
+    [style*="gridTemplateColumns: repeat(3"], [style*="gridTemplateColumns:repeat(3"] {
+      grid-template-columns: 1fr !important;
+    }
+    /* Two-column layouts collapse to one */
+    [style*="grid-template-columns: 1fr 1fr"], [style*="grid-template-columns:1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+    /* Drop the sticky sidebar position on small screens */
+    [style*="position: sticky"], [style*="position:sticky"] {
+      position: static !important;
+    }
+    /* Reduce nav padding on small screens */
+    nav > div { padding: 0 16px !important; gap: 12px !important; }
+    /* Page-level padding tighten */
+    section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
+  }
+  @media (max-width: 640px) {
+    /* Drop nav items beyond logo + cart */
+    nav [data-nav-link] { display: none !important; }
+    /* Bigger tap targets */
+    button, a { min-height: 32px; }
+  }
+
+  /* 6.4 Focus-visible — visible keyboard focus, not on click */
+  *:focus { outline: none; }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+  textarea:focus-visible, [role="button"]:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* Light-surface elements need a dark focus ring instead */
+  input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline-color: var(--black);
+  }
+
+  /* 6.3 — Ensure body text on dark surfaces is at least rgba(255,255,255,0.7) */
+  /* (handled per-element where critical; this is informational)*/
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ── DATA ──────────────────────────────────────────────────────────────────
+const PRODUCTS = {
+  1:  { id:1,  name:'Kyouki Full Body Kit',     cat:'Body Kits',     price:749,  rating:4.8, totalReviews:142, badge:'BESTSELLER', vehicle:'1997–2004 Chevrolet Corvette C5',     includes:['Front Bumper','Rear Bumper','Side Skirts'],            material:'Flexible Polyurethane (PU)', fitment:'Direct OEM bolt-on — no cutting or modification required', finish:'Primer gray, ready to paint', madeIn:'Fullerton, Orange County, USA', shipping:'Ships within 3–5 business days', desc:'The Kyouki Full Body Kit is one of KBD\'s most iconic styles, designed for the C5 Corvette platform. Aggressive lower profile, deep front intakes, and clean side skirts. Molded from our proprietary flexible polyurethane compound — it will take impacts that shatter fiberglass and flex back into shape.',  features:['True flexible PU — no cracking on impact','Pre-drilled mounting points align to factory holes','Smooth primer finish for easy paint prep','Includes all hardware for installation'], reviews:[] },
+  2:  { id:2,  name:'Zenki Full Body Kit',      cat:'Body Kits',     price:699,  rating:4.9, totalReviews:89,  badge:'TOP RATED',  vehicle:'1995–1996 Nissan 240SX S14 Zenki',    includes:['Front Bumper','Rear Bumper','Side Skirts'],            material:'Flexible Polyurethane (PU)', fitment:'Direct OEM bolt-on', finish:'Primer gray, ready to paint', madeIn:'Fullerton, Orange County, USA', shipping:'Ships within 3–5 business days', desc:'KBD\'s signature Zenki kit is built specifically for the pre-facelift S14 chassis. Drift-tested fitment, OEM-precision panels, and unmistakable lines. The kit that built half the Formula D paddock.', features:['Platform-specific Zenki S14 mold','Flexible PU construction','OEM bolt-on hardware included','Test-fitted to actual vehicles before production'], reviews:[] },
+  3:  { id:3,  name:'Kouki Full Body Kit',      cat:'Body Kits',     price:699,  rating:4.8, totalReviews:76,  badge:null,         vehicle:'1997–1998 Nissan 240SX S14 Kouki',    includes:['Front Bumper','Rear Bumper','Side Skirts'],            material:'Flexible Polyurethane (PU)', fitment:'Direct OEM bolt-on', finish:'Primer gray, ready to paint', madeIn:'Fullerton, Orange County, USA', shipping:'Ships within 3–5 business days', desc:'The Kouki kit is purpose-molded for the post-facelift S14. Different headlight contours, different bumper transitions — the right kit for the right chassis year.', features:['Platform-specific Kouki S14 mold','Flexible PU construction','OEM bolt-on hardware included','Test-fitted to actual vehicles before production'], reviews:[] },
+  4:  { id:4,  name:'VTX Front Bumper',         cat:'Front Bumpers', price:319,  rating:4.9, totalReviews:118, badge:'BESTSELLER', vehicle:'2003–2009 Nissan 350Z Z33',           includes:['Front Bumper Cover','Mounting Hardware'],              material:'Flexible Polyurethane (PU)', fitment:'OEM bolt-on replacement', finish:'Primer gray, ready to paint', madeIn:'Fullerton, Orange County, USA', shipping:'Ships within 3–5 business days', desc:'The VTX is KBD\'s most popular Z33 front. Aggressive splitter, wide intake mouth, sharp shoulders. Pairs with every popular Z33 hood and skirt on the market.', features:['Aggressive race-inspired profile','Deep splitter for high-speed downforce','Flexible PU construction','OEM bolt-on installation'], reviews:[] },
+  5:  { id:5,  name:'N-1 Front Bumper',         cat:'Front Bumpers', price:289,  rating:4.7, totalReviews:94,  badge:null,         vehicle:'2003–2009 Nissan 350Z Z33',           includes:['Front Bumper Cover','Mounting Hardware'],              material:'Flexible Polyurethane (PU)', fitment:'OEM bolt-on replacement', finish:'Primer gray, ready to paint', madeIn:'Fullerton, Orange County, USA', shipping:'Ships within 3–5 business days', desc:'The N-1 is a cleaner, OEM+ alternative for the Z33 — subtler intake openings, conservative chin line. Built for the daily driver who wants more presence without going full race.', features:['OEM+ refined styling','Flexible PU construction','Direct bolt-on fitment','Primer-ready for paint match'], reviews:[] },
+  6:  { id:6,  name:'Deuce Full Body Kit',      cat:'Body Kits',     price:629,  rating:4.8, totalReviews:67,  badge:null,         vehicle:'1990–1997 Mazda Miata NA',            includes:['Front Bumper','Rear Bumper','Side Skirts'],            material:'Flexible Polyurethane (PU)', fitment:'Direct OEM bolt-on', finish:'Primer gray, ready to paint', madeIn:'Fullerton, Orange County, USA', shipping:'Ships within 3–5 business days', desc:'The Deuce kit gives the NA Miata the aggressive presence it deserves. Wider stance optics, deeper aero, and KBD-grade PU that won\'t crack on the next track day off-track excursion.', features:['Platform-specific NA Miata mold','Flexible PU construction','Direct bolt-on','Test-fitted to factory mounting points'], reviews:[] },
+  7:  { id:7,  name:'Stalker Front Bumper',     cat:'Front Bumpers', price:319,  rating:4.9, totalReviews:89,  badge:'TOP RATED',  vehicle:'1994–2001 Acura Integra DC2',         includes:['Front Bumper Cover','Mounting Hardware'],              material:'Flexible Polyurethane (PU)', fitment:'OEM bolt-on replacement', finish:'Primer gray, ready to paint', madeIn:'Fullerton, Orange County, USA', shipping:'Ships within 3–5 business days', desc:'The Stalker Style Front Bumper brings an aggressive, race-inspired lower profile to the DC2 Integra. Deep lower lip, wide intake openings, sharp crease lines. The exact look that built the Honda scene.', features:['Race-inspired aggressive profile','Deep lower lip with wide intake openings','Flexible PU construction','OEM bolt-on installation'], reviews:[] },
+  8:  { id:8,  name:'2Fordy Full Body Kit',     cat:'Body Kits',     price:699,  rating:4.7, totalReviews:54,  badge:null,         vehicle:'1999–2004 Ford Mustang SN95',         includes:['Front Bumper','Rear Bumper','Side Skirts'],            material:'Flexible Polyurethane (PU)', fitment:'Direct OEM bolt-on', finish:'Primer gray, ready to paint', madeIn:'Fullerton, Orange County, USA', shipping:'Ships within 3–5 business days', desc:'For the SN95 Mustang faithful. The 2Fordy retains the muscle car proportions while adding modern aero treatment. PU flex means no cracked bumpers from parking-lot kisses.', features:['Built for SN95 New Edge Mustang','Flexible PU construction','Direct bolt-on','OEM-quality fitment'], reviews:[] },
+  9:  { id:9,  name:'Cobra-R Front Bumper',     cat:'Front Bumpers', price:289,  rating:4.6, totalReviews:38,  badge:null,         vehicle:'1999–2004 Ford Mustang SN95',         includes:['Front Bumper Cover','Mounting Hardware'],              material:'Flexible Polyurethane (PU)', fitment:'OEM bolt-on replacement', finish:'Primer gray, ready to paint', madeIn:'Fullerton, Orange County, USA', shipping:'Ships within 3–5 business days', desc:'KBD\'s tribute to the SVT Cobra-R aero. Sharp chin, wide intakes, signature lower lip line. PU construction — not the brittle fiberglass replicas you\'ll find elsewhere.', features:['Cobra-R inspired styling','Flexible PU construction','Direct bolt-on fitment','Primer-ready'], reviews:[] },
+  10: { id:10, name:'Bsport Full Body Kit',     cat:'Body Kits',     price:699,  rating:4.8, totalReviews:42,  badge:'NEW',        vehicle:'1998–2005 Lexus GS300 / GS400',       includes:['Front Bumper','Rear Bumper','Side Skirts'],            material:'Flexible Polyurethane (PU)', fitment:'Direct OEM bolt-on', finish:'Primer gray, ready to paint', madeIn:'Fullerton, Orange County, USA', shipping:'Ships within 3–5 business days', desc:'The Bsport (or B-Sport) is KBD\'s answer to the underserved Lexus GS aftermarket. VIP-leaning lines with a track-ready front splitter. Refined, aggressive, finally available.', features:['Platform-specific GS300/GS400 mold','VIP-leaning aero treatment','Flexible PU construction','Direct OEM bolt-on'], reviews:[] },
+  11: { id:11, name:'Fender Flare Kit',         cat:'Fender Flares', price:419,  rating:4.9, totalReviews:71,  badge:'POPULAR',    vehicle:'2018–2024 Jeep Wrangler JL',          includes:['Front Flares','Rear Flares','Hardware'],               material:'Flexible Polyurethane (PU)', fitment:'Direct OEM bolt-on', finish:'Textured black, paintable', madeIn:'Fullerton, Orange County, USA', shipping:'Ships within 3–5 business days', desc:'Aggressive trail-ready flares for the JL. Designed to clear 35"+ tires while maintaining factory body lines. PU material handles trail abuse without cracking.', features:['Clears 35"+ tires','Textured paintable finish','Bolt-on installation','Flexible PU absorbs trail impacts'], reviews:[] },
+  12: { id:12, name:'PMZ Wide Body',            cat:'Body Kits',     price:1049, rating:5.0, totalReviews:34,  badge:'LIMITED',    vehicle:'1990–1996 Nissan 300ZX Z32',          includes:['Wide Fenders','Front Bumper','Rear Bumper','Side Skirts'], material:'Flexible Polyurethane (PU)', fitment:'Bolt-on with minor body prep', finish:'Primer gray, ready to paint', madeIn:'Fullerton, Orange County, USA', shipping:'Ships within 3–5 business days', desc:'The PMZ Wide Body is the ultimate Z32 transformation. Full wide fenders pull the wheels out to track-ready stance. One of KBD\'s most requested kits — community-funded, owner-validated.', features:['Full wide-body transformation','Pull wheels out for track stance','Flexible PU construction','Limited Lifetime Warranty'], reviews:[] },
+};
+
+// Fallback product for unknown IDs
+const DEFAULT_PRODUCT = PRODUCTS[1];
+
+// Generic-but-credible reviews pool. Used to populate any product whose reviews array is empty,
+// so every product detail page has demo content for the pitch. Replace with real reviews at build time.
+const DEMO_REVIEWS_POOL = [
+  { name:'@rob_nappyboyautomotive', car:'Nissan 240SX S14',  stars:5, date:'March 2026',    text:"Fitment was perfect. Lined up to every factory hole. Paint took clean over the primer." },
+  { name:'@trippy_z33',             car:'Nissan 350Z Z33',    stars:5, date:'January 2026',  text:"Third KBD kit on my builds. Running them since 2018. PU quality keeps getting better." },
+  { name:'@anthony.e36',            car:'BMW E36 3 Series',   stars:5, date:'February 2026', text:"Arrived in perfect condition. Zero warping after a year of daily driving in summer heat." },
+  { name:'@kaida_brz',              car:'Subaru BRZ',         stars:5, date:'February 2026', text:"Bolted on in an afternoon. The OEM bolt holes line up like the kit was made for the car. Because it was." },
+  { name:'@clapped_is300',          car:'Lexus IS300',        stars:5, date:'January 2026',  text:"Took a curb hit two weeks in. Bumper flexed, popped back. Friend's fiberglass kit would've been in pieces." },
+  { name:'@miraimoto',              car:'Lexus SC300',        stars:5, date:'December 2025', text:"Lines are clean, transitions are tight, and I didn't have to file or trim anything. Money well spent." },
+  { name:'@modclubshop',            car:'BMW E46 3 Series',   stars:4, date:'November 2025', text:"Solid kit. One side skirt arrived with a small scuff but customer service replaced it within a week." },
+  { name:'@jl.drifts',              car:'Nissan 350Z',        stars:5, date:'March 2026',    text:"Daily missile. VTX replaced after a wall tap — old one cracked the wheel arch but never came off. PU > FRP." },
+  { name:'@kendyl_xoxo',            car:'Mazda Miata NA',     stars:5, date:'November 2025', text:"Local club meetup approved. Took the kit, paint, and install to one weekend. Rear bumper actually fit." },
+];
+
+function getProduct(id) {
+  const p = PRODUCTS[id] || DEFAULT_PRODUCT;
+  // Inject demo reviews if empty so product pages have content for the pitch.
+  if (!p.reviews || p.reviews.length === 0) {
+    const offset = ((id - 1) * 3) % DEMO_REVIEWS_POOL.length;
+    const picked = [
+      DEMO_REVIEWS_POOL[offset],
+      DEMO_REVIEWS_POOL[(offset + 1) % DEMO_REVIEWS_POOL.length],
+      DEMO_REVIEWS_POOL[(offset + 2) % DEMO_REVIEWS_POOL.length],
+    ];
+    return { ...p, reviews: picked };
+  }
+  return p;
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────
+const KBD_BASE = 'https://kbdbodykits.com/images/productimages';
+const KBD_IMG_MAP = {
+  '1503376780353-7e6692767b70': `${KBD_BASE}/bodykits.jpg`,
+  '1558618666-fcd25c85cd64': `${KBD_BASE}/fronts.jpg`,
+  '1605559911160-a3d95d213904': `${KBD_BASE}/nissan-240sx-s14-zenki-by-rob-nappyboyautomotive-1.jpg`,
+  '1544636331-e26879cd4d9b': `${KBD_BASE}/nissan-350z-by-trippy-z33-2.jpg`,
+  '1526726538690-5cbf90d041f2': `${KBD_BASE}/rears.jpg`,
+  '1487480769727-0c01c8d362b6': `${KBD_BASE}/nissan-240sx-s14-zenki-by-rob-nappyboyautomotive-3.jpg`,
+  '1583121274602-3e2820c69888': `${KBD_BASE}/scion-frs-subaru-brz-toyota-86-by-kaida-brz-1.jpg`,
+  '1580273916550-e323be2ae537': `${KBD_BASE}/sides.jpg`,
+  '1494976388531-d1058494cdd8': `${KBD_BASE}/bmw-e36-3-series-2dr-4dr-by-anthony-e36-1.jpg`,
+  '1492144534655-ae79c964c9d7': `${KBD_BASE}/nissan-350z-by-trippy-z33-4.jpg`,
+  '1616422396617-b1e80b9698b8': `${KBD_BASE}/scion-frs-subaru-brz-toyota-86-by-kaida-brz-3.jpg`,
+  '1563720223185-11003d516935': `${KBD_BASE}/unboxing.jpg`,
+  '1591105575633-922c8897af9a': `${KBD_BASE}/37-6924-13.jpg`,
+  '1695237590620-05b90e38226e': `${KBD_BASE}/37-6924-3.jpg`,
+};
+const KBD_IMG = (id, w) => KBD_IMG_MAP[id] || `${KBD_BASE}/bodykits.jpg`;
+const UNSPLASH = (id,w=800) => KBD_IMG(id, w);
+const PROD_IMG_MAP = {
+  1:  ['1503376780353-7e6692767b70','1558618666-fcd25c85cd64','1605559911160-a3d95d213904','1544636331-e26879cd4d9b'],
+  2:  ['1605559911160-a3d95d213904','1526726538690-5cbf90d041f2','1487480769727-0c01c8d362b6','1583121274602-3e2820c69888'],
+  3:  ['1487480769727-0c01c8d362b6','1605559911160-a3d95d213904','1526726538690-5cbf90d041f2','1544636331-e26879cd4d9b'],
+  4:  ['1544636331-e26879cd4d9b','1580273916550-e323be2ae537','1583121274602-3e2820c69888','1563720223185-11003d516935'],
+  5:  ['1558618666-fcd25c85cd64','1503376780353-7e6692767b70','1544636331-e26879cd4d9b','1605559911160-a3d95d213904'],
+  6:  ['1580273916550-e323be2ae537','1583121274602-3e2820c69888','1616422396617-b1e80b9698b8','1526726538690-5cbf90d041f2'],
+  7:  ['1583121274602-3e2820c69888','1494976388531-d1058494cdd8','1605559911160-a3d95d213904','1580273916550-e323be2ae537'],
+  8:  ['1494976388531-d1058494cdd8','1605559911160-a3d95d213904','1558618666-fcd25c85cd64','1591105575633-922c8897af9a'],
+  9:  ['1591105575633-922c8897af9a','1494976388531-d1058494cdd8','1503376780353-7e6692767b70','1544636331-e26879cd4d9b'],
+  10: ['1492144534655-ae79c964c9d7','1580273916550-e323be2ae537','1583121274602-3e2820c69888','1605559911160-a3d95d213904'],
+  11: ['1563720223185-11003d516935','1616422396617-b1e80b9698b8','1695237590620-05b90e38226e','1503376780353-7e6692767b70'],
+  12: ['1503376780353-7e6692767b70','1605559911160-a3d95d213904','1544636331-e26879cd4d9b','1580273916550-e323be2ae537'],
+};
+
+function PlaceholderImg({ label, aspect='1/1', dark=false, large=false, unsplashId=null, w=800 }) {
+  const [err, setErr] = React.useState(false);
+  if (unsplashId && !err) {
+    return (
+      <div style={{ position:'relative', width:'100%', aspectRatio:aspect, overflow:'hidden', background:dark?'#181818':'#e0ddd8', borderRadius:'8px' }}>
+        <img src={UNSPLASH(unsplashId,w)} alt={label} onError={()=>setErr(true)} style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}}/>
+      </div>
+    );
+  }
+  return (
+    <div style={{
+      position:'relative', width:'100%', aspectRatio:aspect, background:'#1A1A1A',
+      overflow:'hidden', display:'flex', alignItems:'flex-end', justifyContent:'flex-start',
+      padding:'10px 12px'
+    }}>
+      <span style={{
+        fontFamily:'ui-monospace, monospace', fontSize:'9px', letterSpacing:'0.08em',
+        color:'rgba(255,255,255,0.35)', lineHeight:1.3, textTransform:'uppercase', maxWidth:'100%'
+      }}>
+        <span style={{color:'var(--red)',fontWeight:700}}>placeholder</span> — real photo: {label}
+      </span>
+    </div>
+  );
+}
+
+function Stars({ rating, size=13, interactive=false, onRate }) {
+  const [hoverStar, setHoverStar] = useState(0);
+  return (
+    <span style={{display:'inline-flex',gap:'2px'}}>
+      {[1,2,3,4,5].map(i=>(
+        <svg key={i} width={size} height={size} viewBox="0 0 12 12"
+          style={{cursor:interactive?'pointer':'default'}}
+          onMouseEnter={interactive?()=>setHoverStar(i):undefined}
+          onMouseLeave={interactive?()=>setHoverStar(0):undefined}
+          onClick={interactive&&onRate?()=>onRate(i):undefined}
+        >
+          <polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.3 2.8,11 3.5,7.5 1,5 4.5,4.5"
+            fill={i<=(hoverStar||Math.floor(rating))?'var(--red)':'#ddd'} stroke="none"/>
+        </svg>
+      ))}
+    </span>
+  );
+}
+
+function Nav({ product, year, make, model }) {
+  return (
+    <nav style={{ position:'sticky', top:0, zIndex:1000, background:'var(--black)', borderBottom:'1px solid #222' }}>
+      <div style={{ maxWidth:'1440px', margin:'0 auto', display:'flex', alignItems:'center', padding:'0 40px', height:'64px', gap:'24px' }}>
+        <a href="KBD_Homepage.html" style={{display:'flex',alignItems:'center',height:'40px',textDecoration:'none',flexShrink:0}} aria-label="KBD Body Kits home">
+          <img src="assets/kbd-logo.png" alt="KBD Body Kits" style={{height:'72px',width:'auto',display:'block'}}/>
+        </a>
+        <div style={{flex:1, display:'flex', gap:'0', alignItems:'center'}}>
+          {[['KBD_Homepage.html','Shop By Vehicle'],['KBD_Results.html','Body Kits'],['KBD_Equipped.html','KBD Equipped'],['KBD_Will_Make_It.html','Will Make It'],['KBD_About.html','About'],['KBD_Blog.html','Blog']].map(([href,item]) => (
+            <a key={item} href={href} style={{ color:'#aaa', textDecoration:'none', padding:'0 12px', height:'64px', display:'flex', alignItems:'center', fontSize:'13px', fontWeight:500, transition:'color 0.15s' }}
+              onMouseEnter={e=>e.currentTarget.style.color='white'} onMouseLeave={e=>e.currentTarget.style.color='#aaa'}
+            >{item}</a>
+          ))}
+        </div>
+        <button style={{background:'none',border:'none',cursor:'pointer',color:'#aaa',padding:'6px'}}>
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+        <a href="KBD_Order_Status.html" style={{ color:'#aaa', fontSize:'13px', textDecoration:'none', display:'flex', alignItems:'center', gap:'6px' }}>
+          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Track Order
+        </a>
+        <button style={{ background:'var(--red)', border:'none', cursor:'pointer', color:'white', padding:'8px 18px', borderRadius:'6px', fontWeight:600, fontSize:'13px', display:'flex', alignItems:'center', gap:'6px', fontFamily:'DM Sans, sans-serif' }} onClick={()=>window.location.href='KBD_Checkout.html'}>
+          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Cart ({(()=>{try{return JSON.parse(localStorage.getItem('kbd_cart')||'[]').reduce((s,i)=>s+i.qty,0)}catch{return 0}})()})
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+// ── PRODUCT PAGE ──────────────────────────────────────────────────────────
+
+function AnnouncementBar() {
+  const messages = ['Made in USA — Orange County, CA for almost 50 years','Polyurethane construction — Limited Lifetime Warranty','Hundreds of vehicle applications'];
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { const t = setInterval(() => setIdx((i) => (i + 1) % messages.length), 3500); return () => clearInterval(t); }, []);
+  return (<div style={{ background:'var(--red)', color:'white', textAlign:'center', padding:'9px 16px', fontSize:'12px', fontWeight:600, letterSpacing:'0.12em', textTransform:'uppercase', fontFamily:'Barlow Condensed, sans-serif' }}>{messages[idx]}</div>);
+}
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{"accentColor":"#CC0000","showFAQ":true}/*EDITMODE-END*/;
+
+function ProductPage() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--red', tweaks.accentColor);
+  }, [tweaks.accentColor]);
+
+  const params = new URLSearchParams(window.location.search);
+  const id = parseInt(params.get('id')) || 1;
+  const year = params.get('year') || '1994';
+  const make = params.get('make') || 'Honda';
+  const model = params.get('model') || 'Civic';
+  const product = getProduct(id);
+
+  const [activeImage, setActiveImage] = useState(0);
+  const [qty, setQty] = useState(1);
+  const [added, setAdded] = useState(false);
+  const [activeTab, setActiveTab] = useState('details');
+  const [wishlisted, setWishlisted] = useState(false);
+  const [reviewStars, setReviewStars] = useState(0);
+  const [expandedFAQ, setExpandedFAQ] = useState(null);
+
+  const imageLabels = [
+    `${product.name}\nfront 3/4 view`,
+    `${product.name}\nrear view`,
+    `${product.name}\nside profile`,
+    `${product.name}\ninstalled view`,
+  ];
+
+  function handleAddToCart() {
+    setAdded(true);
+    // Add to localStorage cart
+    try {
+      const cart = JSON.parse(localStorage.getItem('kbd_cart') || '[]');
+      const existing = cart.find(i => i.id === product.id);
+      if (existing) { existing.qty += qty; } 
+      else { cart.push({ id:product.id, name:product.name, vehicle:`${year} ${make} ${model}`, price:product.price, qty, cat:product.cat, img:(PROD_IMG_MAP[product.id]||PROD_IMG_MAP[1])[0] }); }
+      localStorage.setItem('kbd_cart', JSON.stringify(cart));
+    } catch(e) {}
+    setTimeout(() => { window.location.href = 'KBD_Checkout.html'; }, 900);
+  }
+
+  const faqs = [
+    { q:'What material is this kit made from?', a:'All KBD kits are manufactured from flexible polyurethane (PU) — not fiberglass. This means the kit will flex on impact rather than crack or shatter, and return to its original shape.' },
+    { q:'Does this require any cutting or modification?', a:'No cutting required. All KBD kits are engineered to bolt directly onto OEM mounting points. The hardware included aligns to factory holes.' },
+    { q:'How do I prep and paint this kit?', a:'The kit ships in primer gray. Lightly sand with 220 grit, wipe clean with wax remover, apply self-etching primer, then your color coat. The PU surface holds paint extremely well.' },
+    { q:'What is the shipping time?', a:'Most orders ship within 3–5 business days from our Fullerton, CA facility. Freight shipping is used for full body kits.' },
+  ];
+
+  const relatedProducts = [
+    { name:'OEM+ Style Rear Bumper', price:279, cat:'Rear Bumpers' },
+    { name:'Carbon Look Side Skirts', price:189, cat:'Side Skirts' },
+    { name:'GT Style Rear Spoiler', price:229, cat:'Spoilers' },
+    { name:'V-Speed Front Lip', price:159, cat:'Lip Kits' },
+  ];
+
+  return (
+    <div style={{ animation:'slideUp 0.5s ease forwards' }}>
+      <AnnouncementBar/>
+      <Nav product={product} year={year} make={make} model={model}/>
+
+      {/* Breadcrumb */}
+      <div style={{ background:'white', borderBottom:'1px solid var(--mid-grey)' }}>
+        <div style={{ maxWidth:'1440px', margin:'0 auto', padding:'14px 40px', display:'flex', alignItems:'center', gap:'8px', fontSize:'12px', color:'var(--text-muted)' }}>
+          <a href="KBD_Homepage.html" style={{color:'var(--text-muted)',textDecoration:'none'}}>Home</a>
+          <span>›</span>
+          <a href={`KBD_Results.html?year=${year}&make=${make}&model=${model}`} style={{color:'var(--text-muted)',textDecoration:'none'}}>{year} {make} {model}</a>
+          <span>›</span>
+          <span style={{color:'var(--text-body)',fontWeight:500}}>{product.name}</span>
+        </div>
+      </div>
+
+      {/* Main product section */}
+      <div style={{ maxWidth:'1440px', margin:'0 auto', padding:'40px 40px 80px', display:'grid', gridTemplateColumns:'1fr 480px', gap:'60px', alignItems:'start' }}>
+
+        {/* Left: Image gallery */}
+        <div style={{ position:'sticky', top:'96px' }}>
+          {/* Main image */}
+          <div style={{ borderRadius:'16px', overflow:'hidden', marginBottom:'12px', background:'#e8e5e0', position:'relative' }}>
+            <PlaceholderImg label={imageLabels[activeImage]} aspect="4/3" large unsplashId={(PROD_IMG_MAP[id]||PROD_IMG_MAP[1])[activeImage]} w={900}/>
+            {product.badge && (
+              <div style={{ position:'absolute', top:'20px', left:'20px', background:product.badge==='LIMITED'?'var(--red)':'var(--black)', color:'white', padding:'6px 14px', borderRadius:'6px', fontSize:'12px', fontWeight:700, letterSpacing:'0.1em' }}>{product.badge}</div>
+            )}
+            <button onClick={()=>setWishlisted(!wishlisted)} style={{
+              position:'absolute', top:'20px', right:'20px', background:'white', border:'none',
+              borderRadius:'50%', width:'42px', height:'42px', cursor:'pointer',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              boxShadow:'0 4px 16px rgba(0,0,0,0.15)'
+            }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill={wishlisted?'var(--red)':'none'} stroke={wishlisted?'var(--red)':'#555'} strokeWidth="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+          </div>
+          {/* Thumbnails */}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'8px' }}>
+            {imageLabels.map((label, i) => (
+              <div key={i} onClick={()=>setActiveImage(i)} style={{
+                borderRadius:'8px', overflow:'hidden', cursor:'pointer',
+                border: activeImage===i ? '2px solid var(--red)' : '2px solid transparent',
+                transition:'border-color 0.15s'
+              }}>
+                <PlaceholderImg label={label} aspect="1/1" unsplashId={(PROD_IMG_MAP[id]||PROD_IMG_MAP[1])[i]} w={300}/>
+              </div>
+            ))}
+          </div>
+
+          {/* Made in USA banner */}
+          <div style={{ marginTop:'20px', background:'var(--black)', borderRadius:'12px', padding:'16px 20px', display:'flex', alignItems:'center', gap:'16px' }}>
+            <span style={{display:'flex',alignItems:'center'}}>
+              <svg width="28" height="28" viewBox="0 0 24 24"><defs><clipPath id="usflag1"><circle cx="12" cy="12" r="11"/></clipPath></defs><g clipPath="url(#usflag1)"><rect width="24" height="24" fill="#B22234"/><rect y="1.85" width="24" height="1.85" fill="#fff"/><rect y="5.54" width="24" height="1.85" fill="#fff"/><rect y="9.23" width="24" height="1.85" fill="#fff"/><rect y="12.92" width="24" height="1.85" fill="#fff"/><rect y="16.62" width="24" height="1.85" fill="#fff"/><rect y="20.31" width="24" height="1.85" fill="#fff"/><rect width="10" height="13" fill="#3C3B6E"/></g></svg>
+            </span>
+            <div>
+              <div style={{color:'white',fontWeight:700,fontSize:'14px'}}>Made in Fullerton, CA</div>
+              <div style={{color:'#666',fontSize:'12px',marginTop:'2px'}}>Manufactured in-house for almost 50 years</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Product info */}
+        <div>
+          {/* Category tag */}
+          <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'12px' }}>
+            <span style={{ background:'#f0eeeb', color:'#666', padding:'4px 10px', borderRadius:'4px', fontSize:'11px', fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase' }}>{product.cat}</span>
+            <span style={{ background:'oklch(0.48 0.22 25 / 0.1)', color:'var(--red)', padding:'4px 10px', borderRadius:'4px', fontSize:'11px', fontWeight:600, letterSpacing:'0.08em', textTransform:'uppercase' }}>Polyurethane</span>
+          </div>
+
+          {/* Name */}
+          <h1 style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'clamp(32px,3.5vw,48px)', textTransform:'uppercase', lineHeight:0.95, color:'var(--black)', marginBottom:'16px' }}>
+            {product.name}
+          </h1>
+
+          {/* Vehicle fitment */}
+          <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'16px', padding:'10px 14px', background:'#f0eeeb', borderRadius:'8px', borderLeft:'3px solid var(--red)' }}>
+            <svg width="14" height="14" fill="none" stroke="var(--red)" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+            <span style={{fontSize:'13px', color:'var(--text-body)', fontWeight:500}}>
+              Fitment verified for: <strong>{year} {make} {model}</strong>
+            </span>
+          </div>
+
+          {/* Rating */}
+          <div style={{ display:'flex', alignItems:'center', gap:'12px', marginBottom:'24px' }}>
+            <Stars rating={product.rating} size={15}/>
+            <span style={{fontWeight:700,fontSize:'15px'}}>{product.rating}</span>
+            <a href="#reviews" style={{color:'var(--text-muted)',fontSize:'13px',textDecoration:'none',borderBottom:'1px dashed currentColor'}}>
+              {product.totalReviews} reviews
+            </a>
+            <span style={{color:'var(--mid-grey)'}}>·</span>
+            <span style={{color:'#3a9e5a',fontSize:'13px',fontWeight:600,display:'flex',alignItems:'center',gap:'4px'}}>
+              <span style={{width:'6px',height:'6px',borderRadius:'50%',background:'currentColor',display:'inline-block'}}/>
+              In Stock
+            </span>
+          </div>
+
+          {/* Price */}
+          <div style={{ marginBottom:'24px' }}>
+            <div style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'52px', color:'var(--black)', lineHeight:1 }}>
+              ${product.price}
+            </div>
+            <div style={{ color:'var(--text-muted)', fontSize:'13px', marginTop:'4px' }}>
+              Or 4 payments of ${(product.price/4).toFixed(2)} with <span style={{fontWeight:700,color:'var(--black)'}}>Shop Pay</span>
+            </div>
+          </div>
+
+          {/* What's included */}
+          <div style={{ marginBottom:'24px', padding:'16px 18px', background:'#f8f7f5', borderRadius:'10px' }}>
+            <div style={{ fontWeight:700, fontSize:'12px', letterSpacing:'0.1em', textTransform:'uppercase', marginBottom:'10px', color:'var(--black)' }}>What's Included</div>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:'6px' }}>
+              {product.includes.map(item => (
+                <span key={item} style={{ background:'white', border:'1px solid var(--mid-grey)', borderRadius:'6px', padding:'5px 10px', fontSize:'12px', fontWeight:500, display:'flex', alignItems:'center', gap:'5px', color:'var(--text-body)' }}>
+                  <span style={{width:'5px',height:'5px',borderRadius:'50%',background:'var(--red)',display:'inline-block'}}/>
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Qty + Add to Cart */}
+          <div style={{ display:'grid', gridTemplateColumns:'100px 1fr', gap:'12px', marginBottom:'16px' }}>
+            <div style={{ display:'flex', alignItems:'center', border:'1px solid var(--mid-grey)', borderRadius:'10px', background:'white', overflow:'hidden' }}>
+              <button onClick={()=>setQty(Math.max(1,qty-1))} style={{ flex:1, background:'none', border:'none', cursor:'pointer', fontSize:'18px', color:'var(--text-body)', padding:'12px' }}>−</button>
+              <span style={{ minWidth:'32px', textAlign:'center', fontWeight:700, fontSize:'15px' }}>{qty}</span>
+              <button onClick={()=>setQty(qty+1)} style={{ flex:1, background:'none', border:'none', cursor:'pointer', fontSize:'18px', color:'var(--text-body)', padding:'12px' }}>+</button>
+            </div>
+            <button onClick={handleAddToCart} style={{
+              background: added ? '#2d8a50' : 'var(--red)',
+              color:'white', border:'none', borderRadius:'10px', padding:'16px',
+              fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'18px',
+              letterSpacing:'0.06em', textTransform:'uppercase', cursor:'pointer',
+              transition:'background 0.3s', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'
+            }}>
+              {added ? (
+                <>
+                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                  Added to Cart!
+                </>
+              ) : (
+                <>
+                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                  Add to Cart — ${(product.price * qty).toFixed(0)}
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Trust row */}
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'8px', marginBottom:'28px' }}>
+            {[
+              { icon:(<svg width="18" height="18" fill="none" stroke="var(--red)" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>), label:'Limited Lifetime Warranty' },
+              { icon:(<svg width="18" height="18" fill="none" stroke="var(--red)" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>), label:'Ships 3–5 Days' },
+              { icon:'↩', label:'30-Day Returns' },
+            ].map(t => (
+              <div key={t.label} style={{ background:'#f8f7f5', borderRadius:'8px', padding:'10px 12px', textAlign:'center' }}>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'4px'}}>{t.icon}</div>
+                <div style={{fontSize:'11px',fontWeight:600,color:'var(--text-body)'}}>{t.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Tabs */}
+          <div style={{ borderBottom:'2px solid var(--mid-grey)', display:'flex', gap:'0', marginBottom:'24px' }}>
+            {[['details','Details'],['install','Installation'],['fitment','Fitment Notes']].map(([id,label]) => (
+              <button key={id} onClick={()=>setActiveTab(id)} style={{
+                background:'none', border:'none', borderBottom: activeTab===id ? '2px solid var(--red)' : '2px solid transparent',
+                marginBottom:'-2px', padding:'10px 20px', cursor:'pointer', fontSize:'13px',
+                fontWeight: activeTab===id ? 700 : 500, color: activeTab===id ? 'var(--black)' : 'var(--text-muted)',
+                transition:'all 0.15s', fontFamily:'DM Sans, sans-serif', letterSpacing:'0.02em'
+              }}>{label}</button>
+            ))}
+          </div>
+
+          {activeTab === 'details' && (
+            <div style={{animation:'slideUp 0.3s ease'}}>
+              <p style={{fontSize:'14px',lineHeight:1.8,color:'var(--text-body)',marginBottom:'20px'}}>{product.desc}</p>
+              <div style={{display:'flex',flexDirection:'column',gap:'8px'}}>
+                {product.features.map((f,i)=>(
+                  <div key={i} style={{display:'flex',alignItems:'flex-start',gap:'10px',fontSize:'14px'}}>
+                    <span style={{width:'18px',height:'18px',borderRadius:'50%',background:'oklch(0.48 0.22 25 / 0.1)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:'2px'}}>
+                      <svg width="10" height="10" fill="none" stroke="var(--red)" strokeWidth="2.5" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg>
+                    </span>
+                    <span style={{color:'var(--text-body)',lineHeight:1.5}}>{f}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'install' && (
+            <div style={{animation:'slideUp 0.3s ease'}}>
+              {[
+                { step:'01', title:'Remove OEM bumper', desc:'Disconnect fog light harness if equipped. Remove clips along wheel wells and bolts in engine bay. Carefully pull bumper away from vehicle.' },
+                { step:'02', title:'Test fit KBD piece', desc:'Before painting, dry-fit the new bumper to verify alignment. Minor flex adjustments may be needed — PU material allows this without cracking.' },
+                { step:'03', title:'Paint preparation', desc:'Lightly scuff surface with 220-grit. Clean with wax remover. Apply self-etching primer. Let cure 24h before color coat.' },
+                { step:'04', title:'Install and secure', desc:'Use included hardware to mount to OEM brackets. Clip along wheel wells. Reconnect any wiring. Final gaps should be uniform.' },
+              ].map(s => (
+                <div key={s.step} style={{ display:'flex', gap:'16px', marginBottom:'20px' }}>
+                  <div style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'28px', color:'var(--red)', lineHeight:1, minWidth:'36px' }}>{s.step}</div>
+                  <div>
+                    <div style={{fontWeight:700,fontSize:'14px',marginBottom:'4px'}}>{s.title}</div>
+                    <div style={{fontSize:'13px',color:'var(--text-muted)',lineHeight:1.7}}>{s.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'fitment' && (
+            <div style={{animation:'slideUp 0.3s ease'}}>
+              <div style={{ background:'#f0eeeb', borderRadius:'10px', padding:'16px 18px', marginBottom:'16px' }}>
+                <div style={{fontWeight:700,fontSize:'13px',marginBottom:'8px'}}>Currently viewing fitment for:</div>
+                <div style={{display:'flex',gap:'8px'}}>
+                  {['Year: '+params.get('year'),'Make: '+params.get('make'),'Model: '+params.get('model')].map(v=>(
+                    <span key={v} style={{background:'white',border:'1px solid var(--mid-grey)',borderRadius:'6px',padding:'5px 10px',fontSize:'13px',fontWeight:500}}>{v}</span>
+                  ))}
+                </div>
+              </div>
+              <div style={{fontSize:'14px',lineHeight:1.8,color:'var(--text-body)',marginBottom:'16px'}}>
+                This kit is engineered as a direct replacement for the factory bumper cover. All mounting locations correspond to OEM brackets. No subframe or structural modification is needed.
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
+                {[
+                  {label:'Material',val:product.material},
+                  {label:'Finish',val:product.finish},
+                  {label:'Fitment',val:product.fitment},
+                  {label:'Made In',val:product.madeIn},
+                ].map(r=>(
+                  <div key={r.label} style={{padding:'12px 14px',background:'#f8f7f5',borderRadius:'8px'}}>
+                    <div style={{fontSize:'11px',textTransform:'uppercase',letterSpacing:'0.1em',fontWeight:600,color:'var(--text-muted)',marginBottom:'4px'}}>{r.label}</div>
+                    <div style={{fontSize:'13px',fontWeight:500,color:'var(--text-body)'}}>{r.val}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* FAQ */}
+          <div style={{ marginTop:'32px' }}>
+            <div style={{fontWeight:700,fontSize:'13px',letterSpacing:'0.08em',textTransform:'uppercase',marginBottom:'14px',color:'var(--black)'}}>Common Questions</div>
+            {faqs.map((faq,i) => (
+              <div key={i} style={{ borderTop:'1px solid var(--mid-grey)', overflow:'hidden' }}>
+                <button onClick={()=>setExpandedFAQ(expandedFAQ===i?null:i)} style={{
+                  width:'100%', display:'flex', justifyContent:'space-between', alignItems:'center',
+                  padding:'14px 0', background:'none', border:'none', cursor:'pointer', textAlign:'left',
+                  fontSize:'14px', fontWeight:600, color:'var(--text-body)', fontFamily:'DM Sans, sans-serif'
+                }}>
+                  {faq.q}
+                  <span style={{ transform:expandedFAQ===i?'rotate(180deg)':'none', transition:'transform 0.2s', color:'var(--text-muted)', flexShrink:0, marginLeft:'16px' }}>▼</span>
+                </button>
+                {expandedFAQ===i && (
+                  <div style={{ padding:'0 0 16px', fontSize:'13px', color:'var(--text-muted)', lineHeight:1.75, animation:'slideUp 0.2s ease' }}>{faq.a}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Reviews section */}
+      <div id="reviews" style={{ background:'white', padding:'80px 40px' }}>
+        <div style={{ maxWidth:'1440px', margin:'0 auto' }}>
+          <div style={{ display:'grid', gridTemplateColumns:'280px 1fr', gap:'60px', alignItems:'start' }}>
+            {/* Rating summary */}
+            <div>
+              <div style={{ fontSize:'11px', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--red)', fontWeight:700, marginBottom:'12px' }}>Reviews</div>
+              <div style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'80px', color:'var(--black)', lineHeight:1 }}>{product.rating}</div>
+              <Stars rating={product.rating} size={20}/>
+              <div style={{ color:'var(--text-muted)', fontSize:'13px', marginTop:'8px' }}>{product.totalReviews} verified reviews</div>
+
+              {/* Bar chart */}
+              <div style={{ marginTop:'24px', display:'flex', flexDirection:'column', gap:'6px' }}>
+                {[5,4,3,2,1].map(s => {
+                  const pct = s===5?72:s===4?20:s===3?5:s===2?2:1;
+                  return (
+                    <div key={s} style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+                      <span style={{ fontSize:'12px', fontWeight:600, width:'8px', color:'var(--text-muted)' }}>{s}</span>
+                      <svg width="10" height="10" viewBox="0 0 12 12"><polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.3 2.8,11 3.5,7.5 1,5 4.5,4.5" fill="var(--red)"/></svg>
+                      <div style={{ flex:1, height:'6px', background:'#f0eeeb', borderRadius:'3px', overflow:'hidden' }}>
+                        <div style={{ width:`${pct}%`, height:'100%', background:'var(--red)', borderRadius:'3px', transition:'width 0.8s ease' }}/>
+                      </div>
+                      <span style={{ fontSize:'12px', color:'var(--text-muted)', width:'28px', textAlign:'right' }}>{pct}%</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Write review */}
+              <div style={{ marginTop:'24px', padding:'16px', background:'var(--off-white)', borderRadius:'10px' }}>
+                <div style={{ fontWeight:600, fontSize:'13px', marginBottom:'10px' }}>Rate this product</div>
+                <Stars rating={reviewStars} size={22} interactive onRate={setReviewStars}/>
+                {reviewStars > 0 && (
+                  <div style={{ marginTop:'10px', animation:'slideUp 0.2s ease' }}>
+                    <textarea placeholder="Share your experience..." style={{ width:'100%', border:'1px solid var(--mid-grey)', borderRadius:'8px', padding:'10px', fontSize:'13px', fontFamily:'DM Sans, sans-serif', resize:'vertical', minHeight:'80px', color:'var(--text-body)' }}/>
+                    <button style={{ marginTop:'8px', width:'100%', background:'var(--black)', color:'white', border:'none', borderRadius:'8px', padding:'10px', fontWeight:600, fontSize:'13px', cursor:'pointer', fontFamily:'DM Sans, sans-serif' }}>Submit Review</button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Review list */}
+            <div>
+              <div style={{ display:'flex', flexDirection:'column', gap:'24px' }}>
+                {product.reviews.map((r,i) => (
+                  <div key={i} style={{ paddingBottom:'24px', borderBottom: i<product.reviews.length-1 ? '1px solid var(--mid-grey)' : 'none' }}>
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'8px' }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+                        <div style={{ width:'36px', height:'36px', borderRadius:'50%', background:'var(--off-white)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'16px', color:'var(--black)' }}>{r.name[0]}</div>
+                        <div>
+                          <div style={{ fontWeight:700, fontSize:'14px' }}>{r.name}</div>
+                          <div style={{ color:'var(--text-muted)', fontSize:'11px' }}>{r.car}</div>
+                        </div>
+                      </div>
+                      <div style={{ color:'var(--text-muted)', fontSize:'12px' }}>{r.date}</div>
+                    </div>
+                    <Stars rating={r.stars} size={13}/>
+                    <p style={{ marginTop:'10px', fontSize:'14px', lineHeight:1.75, color:'var(--text-body)' }}>{r.text}</p>
+                    <div style={{ marginTop:'8px', display:'flex', gap:'12px' }}>
+                      <button style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:'12px', display:'flex', alignItems:'center', gap:'4px' }}>
+                        <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" style={{marginRight:'4px',verticalAlign:'middle'}}><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg> Helpful (12)
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Related products */}
+      <div style={{ padding:'60px 40px 80px', background:'var(--off-white)' }}>
+        <div style={{ maxWidth:'1440px', margin:'0 auto' }}>
+          <div style={{ fontSize:'11px', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--red)', fontWeight:700, marginBottom:'10px' }}>Complete Your Build</div>
+          <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:'28px' }}>
+            <h2 style={{ fontFamily:'Barlow Condensed, sans-serif', fontSize:'36px', fontWeight:900, textTransform:'uppercase', color:'var(--black)' }}>Pairs Well With</h2>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:'16px' }}>
+            {relatedProducts.map((p,i) => (
+              <div key={i} style={{ background:'white', borderRadius:'12px', overflow:'hidden', cursor:'pointer', transition:'box-shadow 0.2s', boxShadow:'0 2px 8px rgba(0,0,0,0.04)' }}
+                onMouseEnter={e=>e.currentTarget.style.boxShadow='0 12px 36px rgba(0,0,0,0.1)'}
+                onMouseLeave={e=>e.currentTarget.style.boxShadow='0 2px 8px rgba(0,0,0,0.04)'}
+              >
+                <PlaceholderImg label={p.name} aspect="4/3" unsplashId={['1503376780353-7e6692767b70','1558618666-fcd25c85cd64','1616422396617-b1e80b9698b8','1583121274602-3e2820c69888'][i]} w={400}/>
+                <div style={{ padding:'14px 16px 18px' }}>
+                  <div style={{ fontSize:'10px', textTransform:'uppercase', letterSpacing:'0.1em', color:'var(--text-muted)', fontWeight:600, marginBottom:'4px' }}>{p.cat}</div>
+                  <div style={{ fontWeight:600, fontSize:'14px', marginBottom:'10px' }}>{p.name}</div>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                    <span style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:800, fontSize:'22px' }}>${p.price}</span>
+                    <button style={{ background:'var(--black)', color:'white', border:'none', borderRadius:'6px', padding:'7px 14px', fontSize:'12px', fontWeight:600, cursor:'pointer' }}>View</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Sticky add-to-cart bar (appears on scroll) */}
+      <StickyCartBar product={product} qty={qty} onAdd={handleAddToCart} added={added}/>
+    </div>
+  );
+}
+
+function StickyCartBar({ product, qty, onAdd, added }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    function onScroll() { setVisible(window.scrollY > 500); }
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  if (!visible) return null;
+  return (
+    <div style={{
+      position:'fixed', bottom:0, left:0, right:0, background:'var(--black)',
+      borderTop:'1px solid #2a2a2a', padding:'14px 40px', zIndex:999,
+      display:'flex', alignItems:'center', justifyContent:'space-between',
+      animation:'slideUp 0.3s ease', boxShadow:'0 -8px 32px rgba(0,0,0,0.3)'
+    }}>
+      <div style={{ display:'flex', alignItems:'center', gap:'20px' }}>
+        <div style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'18px', color:'white', textTransform:'uppercase' }}>{product.name}</div>
+        <div style={{ color:'#666', fontSize:'13px' }}>Qty: {qty}</div>
+      </div>
+      <div style={{ display:'flex', alignItems:'center', gap:'16px' }}>
+        <div style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'28px', color:'white' }}>${product.price * qty}</div>
+        <button onClick={onAdd} style={{
+          background: added?'#2d8a50':'var(--red)', color:'white', border:'none',
+          borderRadius:'8px', padding:'12px 28px', fontFamily:'Barlow Condensed, sans-serif',
+          fontWeight:900, fontSize:'16px', letterSpacing:'0.06em', textTransform:'uppercase',
+          cursor:'pointer', transition:'background 0.3s'
+        }}>
+          {added ? '✓ Added!' : 'Add to Cart'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<ProductPage/>);
+</script>
+</body>
+</html>

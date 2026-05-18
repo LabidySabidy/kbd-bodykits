@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KBD Body Kits — Premium Polyurethane Body Kits, Made in USA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --red: oklch(0.48 0.22 25);
+    --red-bright: oklch(0.55 0.24 25);
+    --black: #0C0C0C;
+    --off-white: #F7F6F4;
+    --mid-grey: #E8E6E2;
+    --text-muted: #7A7570;
+    --text-body: #2A2825;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--off-white);
+    color: var(--text-body);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--red); color: white; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--off-white); }
+  ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+</style>
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1695237590620-05b90e38226e?auto=format&fit=crop&w=1600&q=82" data-resource-id="img_1695237590620_05b90e38226e">
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1605559911160-a3d95d213904?auto=format&fit=crop&w=1600&q=82" data-resource-id="img_1605559911160_a3d95d213904">
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1600&q=82" data-resource-id="img_1503376780353_7e6692767b70">
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?auto=format&fit=crop&w=1600&q=82" data-resource-id="img_1544636331_e26879cd4d9b">
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1600&q=82" data-resource-id="img_1558618666_fcd25c85cd64">
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=1600&q=82" data-resource-id="img_1580273916550_e323be2ae537">
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&w=1600&q=82" data-resource-id="img_1583121274602_3e2820c69888">
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1600&q=82" data-resource-id="img_1494976388531_d1058494cdd8">
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1600&q=82" data-resource-id="img_1563720223185_11003d516935">
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1487480769727-0c01c8d362b6?auto=format&fit=crop&w=1600&q=82" data-resource-id="img_1487480769727_0c01c8d362b6">
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <rect width="200" height="200" fill="#0C0C0C"/>
+    <text x="100" y="115" text-anchor="middle" font-family="Arial Black,sans-serif" font-weight="900" font-size="56" fill="#CC0000">KBD</text>
+  </svg>
+</template>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const VEHICLE_DATA = {
+  Honda:      { years: [1990,2024], models: ['Civic','Accord','Prelude','S2000','CRX','Integra','Del Sol'] },
+  Toyota:     { years: [1990,2024], models: ['Supra','Celica','Corolla','AE86','MR2','86','Camry'] },
+  Nissan:     { years: [1990,2024], models: ['240SX','350Z','370Z','Altima','Sentra','Skyline R32','Skyline R33'] },
+  Mazda:      { years: [1990,2024], models: ['RX-7','RX-8','Miata MX-5','3','6','Speed3'] },
+  Subaru:     { years: [1990,2024], models: ['WRX STI','Impreza','BRZ','Legacy','Outback'] },
+  Mitsubishi: { years: [1990,2024], models: ['Eclipse','Lancer Evo','3000GT','Galant','Mirage'] },
+  Ford:       { years: [1990,2024], models: ['Mustang','Focus ST','Fusion','Probe','Escort'] },
+  Chevrolet:  { years: [1990,2024], models: ['Camaro','Corvette','Cobalt SS','Malibu','Impala'] },
+  Acura:      { years: [1990,2024], models: ['Integra','NSX','RSX','TSX','TL'] },
+  BMW:        { years: [1990,2024], models: ['3 Series E46','3 Series E36','M3','5 Series','Z3'] },
+  Dodge:      { years: [1990,2024], models: ['Challenger','Charger','Viper','Neon','Stratus'] },
+  Pontiac:    { years: [1990,2006], models: ['GTO','Trans Am','Firebird','Grand Am','Grand Prix'] },
+};
+
+const MAKES = Object.keys(VEHICLE_DATA).sort();
+
+const CATEGORIES = [
+  { name: 'Body Kits', count: '340+', bg: '#1a1a1a' },
+  { name: 'Front Bumpers', count: '280+', bg: '#111' },
+  { name: 'Roof & Spoilers', count: '150+', bg: '#0f0f0f' },
+  { name: 'Rear Bumpers', count: '210+', bg: '#161616' },
+  { name: 'Dashboard', count: '60+', bg: '#181818' },
+  { name: 'Side Skirts', count: '190+', bg: '#131313' },
+  { name: 'Universal', count: '95+', bg: '#121212' },
+];
+
+const PRODUCTS = [
+  { id:1, name:'JDM Style Full Body Kit', vehicle:'1992–1995 Honda Civic EG', price:599, rating:4.8, reviews:142, badge:'BESTSELLER' },
+  { id:2, name:'Stalker Style Front Bumper', vehicle:'1994–2001 Acura Integra DC2', price:329, rating:4.9, reviews:89, badge:'NEW' },
+  { id:3, name:'OEM Style Rear Bumper', vehicle:'1995–1998 Nissan 240SX S14', price:279, rating:4.7, reviews:61, badge:null },
+  { id:4, name:'Duraflex Wide Body Kit', vehicle:'1993–2002 Toyota Supra MK4', price:849, rating:5.0, reviews:34, badge:'LIMITED' },
+  { id:5, name:'Carbon Look Side Skirts', vehicle:'1999–2005 Honda S2000 AP1', price:189, rating:4.6, reviews:77, badge:null },
+  { id:6, name:'EVO Style Full Body Kit', vehicle:'2003–2006 Mitsubishi Lancer', price:699, rating:4.8, reviews:55, badge:'POPULAR' },
+];
+
+const REVIEWS = [
+  { name:'Marcus T.', car:'1994 Honda Civic EG', stars:5, text:'Fitment was absolutely perfect. Lined up to every factory bolt hole without any modification. Quality blew me away for the price.', date:'March 2025' },
+  { name:'Derek S.', car:'2003 Nissan 350Z', stars:5, text:'Third KBD kit on my builds. I\'ve been using them since 2018 and the polyurethane quality just keeps getting better. Never going back to fiberglass.', date:'January 2025' },
+  { name:'Priya M.', car:'2001 Acura Integra DC2', stars:5, text:'Ordered the Stalker front bumper and it arrived in perfect condition. Paint prep was easy — zero warping or flex issues even after a year in Texas heat.', date:'February 2025' },
+];
+
+// ─── UTILS ─────────────────────────────────────────────────────────────────
+const UNSPLASH = (id, w=800) => (window.__resources && window.__resources['img_'+id.replace(/[^a-z0-9]/gi,'_')]) || `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=82`;
+
+function PlaceholderImg({ label, aspect='3/2', dark=false, unsplashId=null, w=800 }) {
+  const [err, setErr] = React.useState(false);
+  if (unsplashId && !err) {
+    return (
+      <div style={{position:'relative',width:'100%',aspectRatio:aspect,overflow:'hidden',background:dark?'#1a1a1a':'#e0ddd8'}}>
+        <img src={UNSPLASH(unsplashId,w)} alt={label} onError={()=>setErr(true)}
+          style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}}/>
+      </div>
+    );
+  }
+  const lines = [];
+  for(let i=0;i<20;i++) lines.push(i);
+  return (
+    <div style={{
+      position:'relative', width:'100%', aspectRatio:aspect,
+      background: dark ? '#1a1a1a' : '#e8e5e0',
+      overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center'
+    }}>
+      <svg style={{position:'absolute',inset:0,width:'100%',height:'100%'}} preserveAspectRatio="none">
+        {lines.map(i=>(
+          <line key={i} x1={i*6+'%'} y1="0" x2={i*6+'%'} y2="100%"
+            stroke={dark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.06)'} strokeWidth="1"/>
+        ))}
+      </svg>
+      <span style={{
+        fontFamily:'monospace', fontSize:'10px', letterSpacing:'0.05em',
+        color: dark?'rgba(255,255,255,0.25)':'rgba(0,0,0,0.25)',
+        textAlign:'center', padding:'8px', position:'relative', textTransform:'uppercase'
+      }}>{label}</span>
+    </div>
+  );
+}
+
+function Stars({ rating, size=13 }) {
+  return (
+    <span style={{display:'inline-flex',gap:'1px'}}>
+      {[1,2,3,4,5].map(i=>(
+        <svg key={i} width={size} height={size} viewBox="0 0 12 12">
+          <polygon points="6,1 7.5,4.5 11,5 8.5,7.5 9.2,11 6,9.3 2.8,11 3.5,7.5 1,5 4.5,4.5"
+            fill={i<=Math.floor(rating)?'var(--red)':'#ddd'} stroke="none"/>
+        </svg>
+      ))}
+    </span>
+  );
+}
+
+// ─── COMPONENTS ────────────────────────────────────────────────────────────
+
+function AnnouncementBar() {
+  const messages = [
+    'FREE SHIPPING on orders over $150',
+    'Made in USA — Fullerton, CA since 1981',
+    'Polyurethane construction — Guaranteed for Life',
+    'Over 800+ vehicles covered',
+  ];
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx(i => (i+1) % messages.length), 3500);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <div style={{
+      background:'var(--red)', color:'white', textAlign:'center',
+      padding:'9px 16px', fontSize:'12px', fontWeight:600, letterSpacing:'0.12em',
+      textTransform:'uppercase', fontFamily:'Barlow Condensed, sans-serif'
+    }}>
+      {messages[idx]}
+    </div>
+  );
+}
+
+function Nav({ tweaks }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState(null);
+  const navItems = [['#','Shop By Vehicle'],['KBD Results.html','Body Kits'],['KBD Results.html','Bumpers'],['KBD Results.html','Side Skirts'],['KBD Results.html','Hoods'],['KBD Equipped.html','KBD Equipped'],['KBD Will Make It.html','Will Make It']];
+
+  return (
+    <nav style={{
+      position:'sticky', top:0, zIndex:1000,
+      background:'var(--black)', borderBottom:'1px solid #222'
+    }}>
+      <div style={{
+        maxWidth:'1440px', margin:'0 auto',
+        display:'flex', alignItems:'center', padding:'0 40px', height:'64px', gap:'32px'
+      }}>
+        {/* Logo */}
+        <a href="#" style={{
+          fontFamily:'Barlow Condensed, sans-serif', fontWeight:900,
+          fontSize:'26px', color:'white', textDecoration:'none',
+          letterSpacing:'0.02em', display:'flex', alignItems:'center', gap:'6px'
+        }}>
+          <span style={{color:'var(--red)'}}>KBD</span>
+          <span style={{fontSize:'12px', fontWeight:600, letterSpacing:'0.15em', color:'#777', marginTop:'1px'}}>BODY KITS</span>
+        </a>
+
+        {/* Nav links */}
+        <div style={{display:'flex', gap:'0', flex:1, alignItems:'center'}}>
+          {navItems.map(([href,item]) => (
+            <a key={item} href={href}
+              onMouseEnter={() => setActiveMenu(item)}
+              onMouseLeave={() => setActiveMenu(null)}
+              style={{
+                color: activeMenu===item ? 'white' : '#aaa',
+                textDecoration:'none', padding:'0 14px', height:'64px',
+                display:'flex', alignItems:'center', fontSize:'13px',
+                fontWeight:500, letterSpacing:'0.04em', transition:'color 0.15s',
+                borderBottom: activeMenu===item ? '2px solid var(--red)' : '2px solid transparent',
+              }}>{item}</a>
+          ))}
+        </div>
+
+        {/* Right actions */}
+        <div style={{display:'flex', alignItems:'center', gap:'20px'}}>
+          {/* Search */}
+          <button style={{
+            background:'transparent', border:'1px solid #333', borderRadius:'6px',
+            color:'#888', padding:'7px 12px', display:'flex', alignItems:'center', gap:'7px',
+            cursor:'pointer', fontSize:'13px'
+          }}>
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <span style={{color:'#555'}}>Search</span>
+          </button>
+          {/* Account */}
+          <button style={{background:'none',border:'none',cursor:'pointer',color:'#aaa',padding:'6px'}}>
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+              <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+          </button>
+          {/* Cart */}
+          <button style={{
+            background:'var(--red)', border:'none', cursor:'pointer',
+            color:'white', padding:'8px 18px', borderRadius:'6px',
+            fontWeight:600, fontSize:'13px', display:'flex', alignItems:'center', gap:'7px',
+            fontFamily:'DM Sans, sans-serif', letterSpacing:'0.02em'
+          }} onClick={()=>window.location.href='KBD Checkout.html'}>
+            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            Cart (0)
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+function Hero({ tweaks }) {
+  const [year, setYear] = useState('');
+  const [make, setMake] = useState('');
+  const [model, setModel] = useState('');
+  const [step, setStep] = useState(0); // 0=idle, 1=done
+  const [animIn, setAnimIn] = useState(false);
+
+  useEffect(() => { setTimeout(() => setAnimIn(true), 100); }, []);
+
+  const years = [];
+  if (make && VEHICLE_DATA[make]) {
+    const [from, to] = VEHICLE_DATA[make].years;
+    for (let y = to; y >= from; y--) years.push(y);
+  } else {
+    for (let y = 2024; y >= 1990; y--) years.push(y);
+  }
+
+  const models = (make && VEHICLE_DATA[make]) ? VEHICLE_DATA[make].models : [];
+
+  const canSearch = year && make && model;
+
+  const selectStyle = {
+    background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.15)',
+    borderRadius:'8px', color:'white', padding:'14px 18px', fontSize:'15px',
+    fontFamily:'DM Sans, sans-serif', cursor:'pointer', appearance:'none',
+    backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+    backgroundRepeat:'no-repeat', backgroundPosition:'calc(100% - 14px) center',
+    paddingRight:'40px', transition:'border-color 0.2s, background 0.2s',
+    width:'100%',
+  };
+
+  return (
+    <section style={{
+      position:'relative', minHeight:'92vh', background:'#080808', backgroundImage:`url(${(window.__resources && window.__resources.img_1487480769727_0c01c8d362b6) || 'https://images.unsplash.com/photo-1487480769727-0c01c8d362b6?auto=format&fit=crop&w=1920&q=85'})`, backgroundSize:'cover', backgroundPosition:'center',
+      display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+      overflow:'hidden'
+    }}>
+      {/* Grid texture */}
+      <div style={{
+        position:'absolute', inset:0,
+        backgroundImage:`
+          linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)`,
+        backgroundSize:'60px 60px',
+        maskImage:'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)'
+      }}/>
+
+      {/* Red glow orb */}
+      <div style={{
+        position:'absolute', width:'600px', height:'300px',
+        background:'radial-gradient(ellipse, oklch(0.48 0.22 25 / 0.18) 0%, transparent 70%)',
+        top:'40%', left:'50%', transform:'translate(-50%, -50%)',
+        pointerEvents:'none'
+      }}/>
+
+      {/* Content */}
+      <div style={{
+        position:'relative', zIndex:2, textAlign:'center',
+        padding:'60px 24px 80px', maxWidth:'860px', width:'100%',
+        opacity: animIn?1:0, transform: animIn?'translateY(0)':'translateY(20px)',
+        transition:'opacity 0.8s ease, transform 0.8s ease'
+      }}>
+        {/* Eyebrow */}
+        <div style={{
+          display:'inline-flex', alignItems:'center', gap:'8px',
+          background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)',
+          borderRadius:'100px', padding:'6px 16px', marginBottom:'28px'
+        }}>
+          <span style={{width:'6px', height:'6px', borderRadius:'50%', background:'var(--red)', display:'block'}}/>
+          <span style={{
+            color:'rgba(255,255,255,0.6)', fontSize:'11px', letterSpacing:'0.18em',
+            textTransform:'uppercase', fontWeight:600
+          }}>800+ Vehicles Covered</span>
+        </div>
+
+        {/* Headline */}
+        <h1 style={{
+          fontFamily:'Barlow Condensed, sans-serif',
+          fontSize: 'clamp(52px, 9vw, 96px)',
+          fontWeight:900, color:'white', lineHeight:0.92,
+          textTransform:'uppercase', letterSpacing:'-0.01em', marginBottom:'16px'
+        }}>
+          Find Your<br/>
+          <span style={{
+            WebkitTextStroke:'2px rgba(255,255,255,0.3)',
+            color:'transparent', fontStyle:'italic'
+          }}>Perfect</span>{' '}
+          <span style={{color:'var(--red)'}}>Kit</span>
+        </h1>
+
+        <p style={{
+          color:'rgba(255,255,255,0.45)', fontSize:'16px', lineHeight:1.6,
+          marginBottom:'48px', maxWidth:'460px', margin:'0 auto 48px'
+        }}>
+          Select your vehicle below and we'll show you every body kit, bumper, and aero piece that fits — guaranteed.
+        </p>
+
+        {/* YMM Selector */}
+        <div style={{
+          background:'rgba(255,255,255,0.04)', backdropFilter:'blur(20px)',
+          border:'1px solid rgba(255,255,255,0.1)', borderRadius:'16px',
+          padding:'28px', display:'flex', flexDirection:'column', gap:'12px'
+        }}>
+          <div style={{display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'12px'}}>
+            <div style={{position:'relative'}}>
+              <label style={{
+                display:'block', color:'rgba(255,255,255,0.4)',
+                fontSize:'10px', letterSpacing:'0.15em', textTransform:'uppercase',
+                fontWeight:600, marginBottom:'7px', paddingLeft:'2px'
+              }}>Year</label>
+              <select value={year} onChange={e=>setYear(e.target.value)} style={selectStyle}>
+                <option value="" style={{background:'#111'}}>Select Year</option>
+                {years.map(y=><option key={y} value={y} style={{background:'#111'}}>{y}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={{
+                display:'block', color:'rgba(255,255,255,0.4)',
+                fontSize:'10px', letterSpacing:'0.15em', textTransform:'uppercase',
+                fontWeight:600, marginBottom:'7px', paddingLeft:'2px'
+              }}>Make</label>
+              <select value={make} onChange={e=>{setMake(e.target.value);setModel('');}} style={selectStyle}>
+                <option value="" style={{background:'#111'}}>Select Make</option>
+                {MAKES.map(m=><option key={m} value={m} style={{background:'#111'}}>{m}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={{
+                display:'block', color:'rgba(255,255,255,0.4)',
+                fontSize:'10px', letterSpacing:'0.15em', textTransform:'uppercase',
+                fontWeight:600, marginBottom:'7px', paddingLeft:'2px'
+              }}>Model</label>
+              <select value={model} onChange={e=>setModel(e.target.value)} style={{...selectStyle, opacity: make?1:0.4}}>
+                <option value="" style={{background:'#111'}}>Select Model</option>
+                {models.map(m=><option key={m} value={m} style={{background:'#111'}}>{m}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <button
+            disabled={!canSearch}
+            onClick={() => canSearch && (window.location.href = `KBD Results.html?year=${year}&make=${make}&model=${encodeURIComponent(model)}`)}
+            style={{
+              background: canSearch ? 'var(--red)' : 'rgba(255,255,255,0.08)',
+              border:'none', borderRadius:'10px', color: canSearch?'white':'rgba(255,255,255,0.3)',
+              padding:'16px', fontSize:'15px', fontWeight:700,
+              letterSpacing:'0.06em', textTransform:'uppercase',
+              fontFamily:'Barlow Condensed, sans-serif', cursor: canSearch?'pointer':'default',
+              transition:'all 0.2s', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px'
+            }}
+          >
+            {canSearch
+              ? `Show Kits for ${year} ${make} ${model}`
+              : 'Select Your Vehicle to Continue'
+            }
+            {canSearch && (
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            )}
+          </button>
+        </div>
+
+        {/* Popular searches */}
+        <div style={{marginTop:'24px', display:'flex', alignItems:'center', justifyContent:'center', gap:'8px', flexWrap:'wrap'}}>
+          <span style={{color:'rgba(255,255,255,0.3)', fontSize:'12px'}}>Popular:</span>
+          {['Honda Civic EG','Nissan 240SX','Acura Integra DC2','Toyota Supra MK4','Mitsubishi Eclipse'].map(v=>(
+            <button key={v} style={{
+              background:'transparent', border:'1px solid rgba(255,255,255,0.12)',
+              borderRadius:'100px', color:'rgba(255,255,255,0.5)', padding:'4px 12px',
+              fontSize:'12px', cursor:'pointer', transition:'all 0.15s',
+              fontFamily:'DM Sans, sans-serif'
+            }}
+            onMouseEnter={e=>{e.target.style.borderColor='rgba(255,255,255,0.35)';e.target.style.color='rgba(255,255,255,0.85)';}}
+            onMouseLeave={e=>{e.target.style.borderColor='rgba(255,255,255,0.12)';e.target.style.color='rgba(255,255,255,0.5)';}}
+            >{v}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Scroll cue */}
+      <div style={{
+        position:'absolute', bottom:'32px', left:'50%', transform:'translateX(-50%)',
+        display:'flex', flexDirection:'column', alignItems:'center', gap:'6px',
+        color:'rgba(255,255,255,0.2)', fontSize:'10px', letterSpacing:'0.15em', textTransform:'uppercase'
+      }}>
+        <span>Scroll</span>
+        <div style={{
+          width:'1px', height:'36px',
+          background:'linear-gradient(to bottom, rgba(255,255,255,0.3), transparent)'
+        }}/>
+      </div>
+    </section>
+  );
+}
+
+function TrustBar() {
+  const items = [
+    { icon:'🇺🇸', label:'Made in USA', sub:'Fullerton, CA since 1981' },
+    { icon:'🛡', label:'Lifetime Guarantee', sub:'Every kit, forever' },
+    { icon:'⚡', label:'Polyurethane', sub:'Won\'t crack or shatter' },
+    { icon:'🎯', label:'Precision Fitment', sub:'OEM bolt-hole accuracy' },
+    { icon:'🚚', label:'Free Shipping $150+', sub:'Ships in 3–5 business days' },
+  ];
+  return (
+    <div style={{background:'var(--black)', borderBottom:'1px solid #1e1e1e'}}>
+      <div style={{
+        maxWidth:'1440px', margin:'0 auto',
+        display:'grid', gridTemplateColumns:'repeat(5, 1fr)',
+        padding:'0 40px'
+      }}>
+        {items.map((item, i) => (
+          <div key={i} style={{
+            padding:'22px 20px', display:'flex', alignItems:'center', gap:'14px',
+            borderRight: i<4 ? '1px solid #1e1e1e' : 'none'
+          }}>
+            <span style={{fontSize:'22px'}}>{item.icon}</span>
+            <div>
+              <div style={{color:'white', fontWeight:600, fontSize:'13px', letterSpacing:'0.02em'}}>{item.label}</div>
+              <div style={{color:'#666', fontSize:'11px', marginTop:'2px'}}>{item.sub}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CategoryGrid() {
+  const [hovered, setHovered] = useState(null);
+  return (
+    <section style={{background:'var(--off-white)', padding:'80px 40px'}}>
+      <div style={{maxWidth:'1440px', margin:'0 auto'}}>
+        <div style={{display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:'40px'}}>
+          <div>
+            <div style={{
+              fontSize:'11px', letterSpacing:'0.2em', textTransform:'uppercase',
+              color:'var(--red)', fontWeight:700, marginBottom:'10px'
+            }}>Shop by Category</div>
+            <h2 style={{
+              fontFamily:'Barlow Condensed, sans-serif', fontSize:'48px', fontWeight:900,
+              textTransform:'uppercase', lineHeight:0.95, color:'var(--black)'
+            }}>Every Part<br/>You Need</h2>
+          </div>
+          <a href="#" style={{
+            color:'var(--text-muted)', fontSize:'13px', textDecoration:'none',
+            borderBottom:'1px solid currentColor', paddingBottom:'2px', fontWeight:500
+          }}>View all categories →</a>
+        </div>
+
+        <div style={{
+          display:'grid',
+          gridTemplateColumns:'2fr 1fr 1fr',
+          gridTemplateRows:'200px 200px 200px',
+          gap:'12px'
+        }}>
+          {CATEGORIES.map((cat, i) => (
+            <div key={i}
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+              style={{
+                gridRow: i === 0 ? '1 / 4' : 'auto',
+                background: cat.bg, borderRadius:'12px', overflow:'hidden',
+                position:'relative', cursor:'pointer',
+                transition:'transform 0.25s ease',
+                transform: hovered===i ? 'scale(1.02)' : 'scale(1)'
+              }}
+            >
+              <PlaceholderImg label={`${cat.name} photo`} aspect="auto" dark unsplashId={['1695237590620-05b90e38226e','1605559911160-a3d95d213904','1503376780353-7e6692767b70','1544636331-e26879cd4d9b','1558618666-fcd25c85cd64','1580273916550-e323be2ae537','1583121274602-3e2820c69888'][i]} w={600}/>
+              <div style={{
+                position:'absolute', inset:0,
+                background:'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 60%)',
+                display:'flex', flexDirection:'column', justifyContent:'flex-end',
+                padding:'20px'
+              }}>
+                <div style={{
+                  fontSize:'10px', letterSpacing:'0.15em', textTransform:'uppercase',
+                  color:'rgba(255,255,255,0.4)', fontWeight:600, marginBottom:'4px'
+                }}>{cat.count} kits</div>
+                <div style={{
+                  fontFamily:'Barlow Condensed, sans-serif', fontWeight:900,
+                  fontSize: i===0 ? '32px' : '20px', color:'white', textTransform:'uppercase',
+                  lineHeight:1
+                }}>{cat.name}</div>
+                <div style={{
+                  width:'28px', height:'2px', background:'var(--red)',
+                  marginTop:'10px', transition:'width 0.3s',
+                  ...(hovered===i ? {width:'48px'} : {})
+                }}/>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FeaturedProducts({ tweaks }) {
+  const [activeTab, setActiveTab] = useState('Bestsellers');
+  const tabs = ['Bestsellers','New Arrivals','Full Body Kits','On Sale'];
+  const [hovered, setHovered] = useState(null);
+
+  return (
+    <section style={{padding:'80px 40px', background:'white'}}>
+      <div style={{maxWidth:'1440px', margin:'0 auto'}}>
+        <div style={{marginBottom:'40px'}}>
+          <div style={{
+            fontSize:'11px', letterSpacing:'0.2em', textTransform:'uppercase',
+            color:'var(--red)', fontWeight:700, marginBottom:'10px'
+          }}>Featured Products</div>
+          <div style={{display:'flex', alignItems:'flex-end', justifyContent:'space-between', gap:'24px', flexWrap:'wrap'}}>
+            <h2 style={{
+              fontFamily:'Barlow Condensed, sans-serif', fontSize:'48px', fontWeight:900,
+              textTransform:'uppercase', lineHeight:0.95, color:'var(--black)'
+            }}>Top Picks<br/>This Month</h2>
+            <div style={{display:'flex', gap:'4px', background:'#f4f3f1', borderRadius:'10px', padding:'4px'}}>
+              {tabs.map(t => (
+                <button key={t} onClick={()=>setActiveTab(t)} style={{
+                  background: activeTab===t ? 'white' : 'transparent',
+                  border:'none', borderRadius:'7px', padding:'8px 16px',
+                  fontSize:'13px', fontWeight: activeTab===t?600:400,
+                  color: activeTab===t ? 'var(--black)' : 'var(--text-muted)',
+                  cursor:'pointer', transition:'all 0.15s',
+                  boxShadow: activeTab===t ? '0 1px 4px rgba(0,0,0,0.1)' : 'none'
+                }}>{t}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'20px'
+        }}>
+          {PRODUCTS.map((p, i) => (
+            <div key={p.id}
+              onMouseEnter={()=>setHovered(i)}
+              onMouseLeave={()=>setHovered(null)}
+              style={{
+                background:'var(--off-white)', borderRadius:'12px', overflow:'hidden',
+                cursor:'pointer', transition:'transform 0.2s, box-shadow 0.2s',
+                transform: hovered===i ? 'translateY(-4px)' : 'none',
+                boxShadow: hovered===i ? '0 12px 40px rgba(0,0,0,0.12)' : '0 2px 8px rgba(0,0,0,0.04)'
+              }}
+            >
+              <div style={{position:'relative'}}>
+                <PlaceholderImg label={p.name} aspect="4/3" unsplashId={['1494976388531-d1058494cdd8','1605559911160-a3d95d213904','1544636331-e26879cd4d9b','1503376780353-7e6692767b70','1558618666-fcd25c85cd64','1583121274602-3e2820c69888'][p.id-1]||'1580273916550-e323be2ae537'} w={600}/>
+                {p.badge && (
+                  <div style={{
+                    position:'absolute', top:'12px', left:'12px',
+                    background: p.badge==='NEW'?'var(--black)':p.badge==='LIMITED'?'var(--red)':'rgba(0,0,0,0.7)',
+                    color:'white', padding:'4px 10px', borderRadius:'4px',
+                    fontSize:'10px', fontWeight:700, letterSpacing:'0.12em'
+                  }}>{p.badge}</div>
+                )}
+                <button style={{
+                  position:'absolute', top:'12px', right:'12px',
+                  background:'white', border:'none', borderRadius:'50%',
+                  width:'34px', height:'34px', cursor:'pointer',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  boxShadow:'0 2px 8px rgba(0,0,0,0.15)', opacity: hovered===i?1:0,
+                  transition:'opacity 0.2s'
+                }}>
+                  <svg width="16" height="16" fill="none" stroke="#333" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                </button>
+              </div>
+              <div style={{padding:'16px 18px 20px'}}>
+                <div style={{fontSize:'11px', color:'var(--text-muted)', fontWeight:500, marginBottom:'4px'}}>{p.vehicle}</div>
+                <div style={{fontWeight:600, fontSize:'15px', color:'var(--black)', marginBottom:'8px', lineHeight:1.3}}>{p.name}</div>
+                <div style={{display:'flex', alignItems:'center', gap:'6px', marginBottom:'14px'}}>
+                  <Stars rating={p.rating}/>
+                  <span style={{fontSize:'12px', color:'var(--text-muted)'}}>{p.rating} ({p.reviews})</span>
+                </div>
+                <div style={{display:'flex', alignItems:'center', justifyContent:'space-between'}}>
+                  <div style={{
+                    fontFamily:'Barlow Condensed, sans-serif', fontWeight:800,
+                    fontSize:'24px', color:'var(--black)'
+                  }}>${p.price}</div>
+                  <button style={{
+                    background:'var(--black)', color:'white', border:'none',
+                    borderRadius:'8px', padding:'9px 18px', fontSize:'13px',
+                    fontWeight:600, cursor:'pointer', letterSpacing:'0.02em',
+                    transition:'background 0.15s',
+                    ...(hovered===i?{background:'var(--red)'}:{})
+                  }}>Add to Cart</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{textAlign:'center', marginTop:'40px'}}>
+          <a href="#" style={{
+            display:'inline-flex', alignItems:'center', gap:'8px',
+            background:'transparent', border:'2px solid var(--black)',
+            borderRadius:'8px', padding:'14px 32px', color:'var(--black)',
+            fontWeight:600, fontSize:'14px', textDecoration:'none', letterSpacing:'0.04em',
+            textTransform:'uppercase', fontFamily:'Barlow Condensed, sans-serif',
+            transition:'all 0.15s'
+          }}
+          onMouseEnter={e=>{e.currentTarget.style.background='var(--black)';e.currentTarget.style.color='white';}}
+          onMouseLeave={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color='var(--black)';}}>
+            View All Products
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function WhyKBD() {
+  const pillars = [
+    {
+      icon: (
+        <svg width="24" height="24" fill="none" stroke="var(--red)" strokeWidth="1.8" viewBox="0 0 24 24">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      ),
+      label: 'Virtually Indestructible',
+      headline: "Won't crack. Won't shatter. Won't quit.",
+      body: "Our proprietary polyurethane formula creates parts that flex on impact and return to their original shape — unlike fiberglass, which shatters. If a KBD part ever breaks, we replace it. Free of charge. No questions asked."
+    },
+    {
+      icon: (
+        <svg width="24" height="24" fill="none" stroke="var(--red)" strokeWidth="1.8" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+        </svg>
+      ),
+      label: 'OEM Quality & Fitment',
+      headline: "Test-fitted before it leaves Fullerton.",
+      body: "Precision 3D modeling and injection molding means every part comes out identical. Each mold is test-fitted to the actual vehicle before production begins — so you get OEM-level fitment, backed by a lifetime warranty."
+    },
+    {
+      icon: (
+        <svg width="24" height="24" fill="none" stroke="var(--red)" strokeWidth="1.8" viewBox="0 0 24 24">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/>
+        </svg>
+      ),
+      label: 'From Concept to Production',
+      headline: "Designed by demand. Built in-house.",
+      body: "Every style starts with community feedback. We listen to what builders want, design it ourselves, and manufacture it start-to-finish at our Fullerton, CA facility. No overseas sourcing. No middlemen."
+    },
+  ];
+
+  return (
+    <section style={{ background:'var(--black)', padding:'100px 40px', position:'relative', overflow:'hidden' }}>
+      {/* Background accents */}
+      <div style={{ position:'absolute', right:'-100px', top:'50%', transform:'translateY(-50%)', width:'600px', height:'600px', background:'radial-gradient(circle, oklch(0.48 0.22 25 / 0.07) 0%, transparent 70%)', pointerEvents:'none' }}/>
+      <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px)', backgroundSize:'60px 60px', maskImage:'radial-gradient(ellipse 80% 80% at 20% 50%, black 30%, transparent 100%)', pointerEvents:'none' }}/>
+
+      <div style={{ maxWidth:'1440px', margin:'0 auto', position:'relative' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1.2fr', gap:'80px', alignItems:'start' }}>
+
+          {/* Left */}
+          <div style={{ position:'sticky', top:'96px' }}>
+            <div style={{ fontSize:'11px', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--red)', fontWeight:700, marginBottom:'16px' }}>Why KBD?</div>
+            <h2 style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'clamp(42px,5vw,72px)', color:'white', textTransform:'uppercase', lineHeight:0.9, marginBottom:'24px' }}>
+              Built Different.<br/>
+              <span style={{ WebkitTextStroke:'1.5px rgba(255,255,255,0.25)', color:'transparent', fontStyle:'italic' }}>Built</span>{' '}
+              <span style={{ color:'var(--red)' }}>Better.</span>
+            </h2>
+            <p style={{ color:'rgba(255,255,255,0.45)', lineHeight:1.75, fontSize:'15px', maxWidth:'400px', marginBottom:'36px' }}>
+              Since 1981, KBD has been designing, molding, and shipping premium polyurethane body kits from Fullerton, California. We're not a middleman — every part is made by us, for you.
+            </p>
+
+            {/* Stats row */}
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'2px', marginBottom:'36px', borderRadius:'12px', overflow:'hidden' }}>
+              {[['40+','Years in Business'],['800+','Vehicles Covered'],['100%','Polyurethane'],['∞','Lifetime Guarantee']].map(([num,label],i) => (
+                <div key={i} style={{ background:i%2===0?'#111':'#0d0d0d', padding:'22px 20px' }}>
+                  <div style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'38px', color:'var(--red)', lineHeight:1, marginBottom:'4px' }}>{num}</div>
+                  <div style={{ color:'rgba(255,255,255,0.5)', fontSize:'12px', fontWeight:600, letterSpacing:'0.06em', textTransform:'uppercase' }}>{label}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display:'flex', gap:'12px' }}>
+              <a href="KBD Homepage.html" style={{ background:'var(--red)', color:'white', padding:'14px 28px', borderRadius:'8px', textDecoration:'none', fontWeight:700, fontSize:'14px', letterSpacing:'0.04em', textTransform:'uppercase', fontFamily:'Barlow Condensed, sans-serif' }}>Find My Kit</a>
+              <a href="#" style={{ background:'transparent', color:'rgba(255,255,255,0.6)', border:'1px solid rgba(255,255,255,0.2)', padding:'14px 28px', borderRadius:'8px', textDecoration:'none', fontWeight:600, fontSize:'14px', letterSpacing:'0.04em', textTransform:'uppercase', fontFamily:'Barlow Condensed, sans-serif' }}>Our Story</a>
+            </div>
+          </div>
+
+          {/* Right: feature pillars */}
+          <div style={{ display:'flex', flexDirection:'column', gap:'2px' }}>
+            {pillars.map((p, i) => (
+              <div key={i} style={{
+                background: i===0?'#111':i===1?'#0f0f0f':'#111',
+                padding:'36px 32px',
+                borderRadius: i===0?'12px 12px 0 0':i===pillars.length-1?'0 0 12px 12px':'0',
+                borderTop: i>0?'1px solid #1a1a1a':'none',
+                transition:'background 0.2s'
+              }}>
+                <div style={{ display:'flex', alignItems:'flex-start', gap:'18px' }}>
+                  <div style={{ width:'48px', height:'48px', borderRadius:'12px', background:'rgba(204,0,0,0.1)', border:'1px solid rgba(204,0,0,0.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:'2px' }}>
+                    {p.icon}
+                  </div>
+                  <div>
+                    <div style={{ fontSize:'10px', letterSpacing:'0.18em', textTransform:'uppercase', color:'var(--red)', fontWeight:700, marginBottom:'6px' }}>{p.label}</div>
+                    <div style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'24px', color:'white', textTransform:'uppercase', lineHeight:1, marginBottom:'12px', letterSpacing:'0.01em' }}>{p.headline}</div>
+                    <p style={{ color:'rgba(255,255,255,0.4)', fontSize:'14px', lineHeight:1.75 }}>{p.body}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ShowUsYourRideBanner() {
+  return (
+    <div style={{
+      background:'linear-gradient(135deg, #6a11cb 0%, #c0115a 50%, #f07028 100%)',
+      padding:'56px 40px', textAlign:'center', position:'relative', overflow:'hidden'
+    }}>
+      <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.18)',pointerEvents:'none'}}/>
+      <div style={{position:'relative', maxWidth:'1440px', margin:'0 auto', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'32px'}}>
+        <h2 style={{fontFamily:'Barlow Condensed, sans-serif',fontWeight:900,fontSize:'clamp(32px,3.5vw,52px)',color:'white',textTransform:'uppercase',letterSpacing:'0.02em',lineHeight:1,whiteSpace:'nowrap'}}>
+          Show Us Your Ride — Tag <span style={{opacity:0.85}}>@kbdbodykits</span> or <span style={{background:'rgba(255,255,255,0.18)',borderRadius:'5px',padding:'2px 10px'}}>#KBDBodyKits</span>
+        </h2>
+        <a href="https://instagram.com/kbdbodykits" target="_blank" rel="noopener" style={{
+          background:'white', color:'#c0115a', padding:'14px 28px', borderRadius:'8px',
+          textDecoration:'none', fontFamily:'Barlow Condensed, sans-serif', fontWeight:900,
+          fontSize:'16px', textTransform:'uppercase', letterSpacing:'0.08em',
+          display:'flex', alignItems:'center', gap:'8px', flexShrink:0, whiteSpace:'nowrap'
+        }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor"/></svg>
+          Tag Us
+        </a>
+      </div>
+    </div>
+  );
+}
+
+function BuildGallery() {
+  const builds = [
+    { car:'1993 Honda Civic EG', user:'@racer_mark', kit:'JDM Full Kit' },
+    { car:'1999 Nissan 240SX S14', user:'@driftco', kit:'Rocket Style Kit' },
+    { car:'2002 Acura RSX', user:'@rsx_nation', kit:'Duraflex EVO' },
+    { car:'1996 Mitsubishi Eclipse', user:'@eclipseclub', kit:'N-1 Widebody' },
+    { car:'2001 Toyota Celica', user:'@celicafan', kit:'OEM-Style Kit' },
+    { car:'1994 Honda Prelude', user:'@preludes_only', kit:'Bomex Style' },
+  ];
+  const [hovered, setHovered] = useState(null);
+
+  return (
+    <section style={{padding:'80px 40px', background:'var(--off-white)'}}>
+      <div style={{maxWidth:'1440px', margin:'0 auto'}}>
+        <div style={{display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:'40px'}}>
+          <div>
+            <div style={{
+              fontSize:'11px', letterSpacing:'0.2em', textTransform:'uppercase',
+              color:'var(--red)', fontWeight:700, marginBottom:'10px'
+            }}>Real Builds</div>
+            <h2 style={{
+              fontFamily:'Barlow Condensed, sans-serif', fontSize:'48px', fontWeight:900,
+              textTransform:'uppercase', lineHeight:0.95, color:'var(--black)'
+            }}>Customer<br/>Gallery</h2>
+          </div>
+          <a href="#" style={{
+            color:'var(--text-muted)', fontSize:'13px', textDecoration:'none',
+            borderBottom:'1px solid currentColor', paddingBottom:'2px', fontWeight:500
+          }}>Submit your build →</a>
+        </div>
+
+        <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'12px'}}>
+          {builds.map((b, i) => (
+            <div key={i}
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+              style={{
+                borderRadius:'10px', overflow:'hidden', position:'relative',
+                cursor:'pointer', aspectRatio:'4/3',
+                transform: hovered===i?'scale(1.02)':'scale(1)',
+                transition:'transform 0.2s ease',
+                boxShadow: hovered===i?'0 16px 40px rgba(0,0,0,0.18)':'none'
+              }}
+            >
+              <PlaceholderImg label={b.car} aspect="4/3" dark unsplashId={['1605559911160-a3d95d213904','1563720223185-11003d516935','1580273916550-e323be2ae537','1558618666-fcd25c85cd64','1503376780353-7e6692767b70','1580273916550-e323be2ae537'][i]} w={700}/>
+              <div style={{
+                position:'absolute', inset:0,
+                background:'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)',
+                opacity: hovered===i?1:0.6, transition:'opacity 0.2s'
+              }}/>
+              <div style={{position:'absolute', bottom:0, left:0, right:0, padding:'16px'}}>
+                <div style={{color:'white', fontWeight:600, fontSize:'14px', marginBottom:'2px'}}>{b.car}</div>
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                  <span style={{color:'rgba(255,255,255,0.5)', fontSize:'12px'}}>{b.kit}</span>
+                  <span style={{color:'var(--red)', fontSize:'12px', fontWeight:600}}>{b.user}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function InstagramFeed() {
+  return (
+    <section style={{padding:'0 0 80px', background:'var(--off-white)'}}>
+      <div style={{maxWidth:'1440px', margin:'0 auto', padding:'0 40px'}}>
+        <div style={{
+          display:'flex', alignItems:'center', justifyContent:'space-between',
+          marginBottom:'24px'
+        }}>
+          <div style={{display:'flex', alignItems:'center', gap:'10px'}}>
+            <div style={{
+              width:'28px', height:'28px', borderRadius:'8px',
+              background:'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)',
+              display:'flex', alignItems:'center', justifyContent:'center'
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="white" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="4" fill="none" stroke="white" strokeWidth="2"/>
+                <circle cx="17.5" cy="6.5" r="1.5" fill="white"/>
+              </svg>
+            </div>
+            <span style={{fontWeight:700, fontSize:'15px'}}>@kbdbodykits</span>
+            <span style={{color:'var(--text-muted)', fontSize:'13px'}}>· Follow us</span>
+          </div>
+          <a href="#" style={{
+            color:'var(--text-muted)', fontSize:'13px', textDecoration:'none',
+            borderBottom:'1px solid currentColor', paddingBottom:'2px'
+          }}>See more on Instagram →</a>
+        </div>
+
+        <div style={{display:'grid', gridTemplateColumns:'repeat(6, 1fr)', gap:'8px'}}>
+          {[...Array(6)].map((_, i) => (
+            <div key={i} style={{
+              borderRadius:'8px', overflow:'hidden', aspectRatio:'1/1',
+              cursor:'pointer', transition:'opacity 0.2s'
+            }}
+            onMouseEnter={e=>e.currentTarget.style.opacity='0.75'}
+            onMouseLeave={e=>e.currentTarget.style.opacity='1'}
+            >
+              <PlaceholderImg label={`IG post ${i+1}`} aspect="1/1" dark unsplashId={(['1494976388531-d1058494cdd8','1503376780353-7e6692767b70','1605559911160-a3d95d213904','1558618666-fcd25c85cd64','1583121274602-3e2820c69888','1580273916550-e323be2ae537'][i]||'1605559911160-a3d95d213904')} w={400}/>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Reviews() {
+  return (
+    <section style={{padding:'80px 40px', background:'white'}}>
+      <div style={{maxWidth:'1440px', margin:'0 auto'}}>
+        <div style={{textAlign:'center', marginBottom:'50px'}}>
+          <div style={{
+            fontSize:'11px', letterSpacing:'0.2em', textTransform:'uppercase',
+            color:'var(--red)', fontWeight:700, marginBottom:'12px'
+          }}>Reviews</div>
+          <h2 style={{
+            fontFamily:'Barlow Condensed, sans-serif', fontSize:'48px', fontWeight:900,
+            textTransform:'uppercase', color:'var(--black)'
+          }}>What Builders Say</h2>
+          <div style={{
+            display:'flex', alignItems:'center', justifyContent:'center', gap:'10px', marginTop:'16px'
+          }}>
+            <Stars rating={5} size={18}/>
+            <span style={{fontWeight:700, fontSize:'18px'}}>4.9</span>
+            <span style={{color:'var(--text-muted)'}}>from 12,000+ verified reviews</span>
+          </div>
+        </div>
+
+        <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'24px'}}>
+          {REVIEWS.map((r, i) => (
+            <div key={i} style={{
+              background:'var(--off-white)', borderRadius:'12px', padding:'28px',
+              borderTop:'3px solid var(--red)'
+            }}>
+              <Stars rating={r.stars}/>
+              <p style={{
+                marginTop:'14px', marginBottom:'20px', lineHeight:1.7,
+                fontSize:'14px', color:'var(--text-body)', fontStyle:'italic'
+              }}>"{r.text}"</p>
+              <div style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                <div>
+                  <div style={{fontWeight:700, fontSize:'14px'}}>{r.name}</div>
+                  <div style={{color:'var(--text-muted)', fontSize:'12px'}}>{r.car}</div>
+                </div>
+                <div style={{color:'var(--text-muted)', fontSize:'12px'}}>{r.date}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CrossSell() {
+  const items = [
+    { name:'Primer Gray Paint', price:24, cat:'Paint & Prep' },
+    { name:'3M Body Panel Adhesive', price:18, cat:'Installation' },
+    { name:'Cutting Discs Set (10pk)', price:32, cat:'Tools' },
+    { name:'Plastic Bonding Epoxy', price:22, cat:'Installation' },
+  ];
+  return (
+    <section style={{padding:'60px 40px', background:'#f0eeeb', borderTop:'1px solid var(--mid-grey)'}}>
+      <div style={{maxWidth:'1440px', margin:'0 auto'}}>
+        <div style={{marginBottom:'28px'}}>
+          <div style={{
+            fontSize:'11px', letterSpacing:'0.2em', textTransform:'uppercase',
+            color:'var(--red)', fontWeight:700, marginBottom:'8px'
+          }}>Complete the Build</div>
+          <h3 style={{
+            fontFamily:'Barlow Condensed, sans-serif', fontSize:'32px', fontWeight:900,
+            textTransform:'uppercase', color:'var(--black)'
+          }}>Frequently Bought Together</h3>
+        </div>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:'16px'}}>
+          {items.map((item, i) => (
+            <div key={i} style={{
+              background:'white', borderRadius:'10px', padding:'16px',
+              display:'flex', alignItems:'center', gap:'14px',
+              boxShadow:'0 1px 4px rgba(0,0,0,0.06)'
+            }}>
+              <div style={{
+                width:'48px', height:'48px', borderRadius:'8px',
+                background:'var(--off-white)', flexShrink:0,
+                display:'flex', alignItems:'center', justifyContent:'center'
+              }}>
+                <span style={{fontSize:'22px'}}>🔧</span>
+              </div>
+              <div style={{flex:1, minWidth:0}}>
+                <div style={{fontWeight:600, fontSize:'13px', marginBottom:'2px'}}>{item.name}</div>
+                <div style={{color:'var(--text-muted)', fontSize:'11px', marginBottom:'6px'}}>{item.cat}</div>
+                <div style={{fontWeight:700, color:'var(--black)'}}>${item.price}</div>
+              </div>
+              <button style={{
+                background:'var(--black)', color:'white', border:'none',
+                borderRadius:'6px', padding:'6px 10px', fontSize:'11px',
+                fontWeight:600, cursor:'pointer', whiteSpace:'nowrap'
+              }}>+ Add</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  const [email, setEmail] = React.useState('');
+  const [signed, setSigned] = React.useState(false);
+
+  const linkHref = l => {
+    if (l==='KBD Equipped') return 'KBD Equipped.html';
+    if (l==='Will Make It' || l==='Will Call Request') return 'KBD Will Make It.html';
+    return '#';
+  };
+
+  return (
+    <footer style={{background:'#080808', color:'rgba(255,255,255,0.5)'}}>
+      <div style={{maxWidth:'1440px', margin:'0 auto'}}>
+
+        {/* Newsletter bar */}
+        <div style={{padding:'48px 40px', borderBottom:'1px solid #1a1a1a', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'48px', alignItems:'center'}}>
+          <div>
+            <div style={{color:'white', fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'22px', textTransform:'uppercase', letterSpacing:'0.02em', marginBottom:'6px'}}>KBD Newsletter</div>
+            <div style={{color:'rgba(255,255,255,0.35)', fontSize:'13px', lineHeight:1.65}}>Sign up to receive occasional updates on new products and exclusive sales.</div>
+          </div>
+          <div>
+            {signed ? (
+              <div style={{display:'flex', alignItems:'center', gap:'10px', color:'#3a9e5a', fontSize:'14px', fontWeight:600}}>
+                <div style={{width:'22px',height:'22px',borderRadius:'50%',background:'#3a9e5a',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                  <svg width="12" height="12" fill="none" stroke="white" strokeWidth="3" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                </div>
+                You're subscribed — thanks!
+              </div>
+            ) : (
+              <div style={{display:'flex', gap:'8px'}}>
+                <input
+                  type="email" placeholder="Your email address" value={email}
+                  onChange={e=>setEmail(e.target.value)}
+                  onKeyDown={e=>e.key==='Enter'&&email.includes('@')&&setSigned(true)}
+                  style={{flex:1, background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.12)', borderRadius:'8px', padding:'11px 16px', fontSize:'14px', color:'white', fontFamily:'DM Sans, sans-serif', outline:'none', transition:'border-color 0.15s'}}
+                  onFocus={e=>e.target.style.borderColor='rgba(255,255,255,0.3)'}
+                  onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.12)'}/>
+                <button onClick={()=>email.includes('@')&&setSigned(true)} style={{background:'var(--red)', color:'white', border:'none', borderRadius:'8px', padding:'11px 22px', fontWeight:700, fontSize:'13px', cursor:'pointer', fontFamily:'DM Sans, sans-serif', whiteSpace:'nowrap', letterSpacing:'0.04em'}}>Sign Up</button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Main footer grid */}
+        <div style={{display:'grid', gridTemplateColumns:'1.8fr 1fr 1fr 1fr', gap:'48px', padding:'52px 40px 48px', borderBottom:'1px solid #1a1a1a'}}>
+
+          {/* Brand col */}
+          <div>
+            <div style={{fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'28px', color:'white', marginBottom:'4px'}}>
+              <span style={{color:'var(--red)'}}>KBD</span>
+              <span style={{fontSize:'13px', fontWeight:600, color:'#555', letterSpacing:'0.12em', marginLeft:'8px'}}>BODY KITS</span>
+            </div>
+            <div style={{fontSize:'12px', color:'#444', marginBottom:'20px'}}>Fullerton, CA — Est. 1981</div>
+            <p style={{fontSize:'13px', lineHeight:1.75, maxWidth:'280px', marginBottom:'24px', color:'rgba(255,255,255,0.3)'}}>
+              Premium polyurethane body kits for over 800 vehicle applications. Made in the USA, guaranteed for life.
+            </p>
+
+            {/* Proudly American Made badge */}
+            <div style={{display:'inline-flex', alignItems:'center', gap:'10px', background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:'10px', padding:'10px 14px', marginBottom:'20px'}}>
+              <div style={{position:'relative', width:'32px', height:'32px', flexShrink:0}}>
+                {/* US flag SVG */}
+                <svg width="32" height="32" viewBox="0 0 32 32">
+                  <clipPath id="circle"><circle cx="16" cy="16" r="16"/></clipPath>
+                  <rect width="32" height="32" fill="#B22234" clipPath="url(#circle)"/>
+                  <rect y="2.46" width="32" height="2.46" fill="white" clipPath="url(#circle)"/>
+                  <rect y="7.38" width="32" height="2.46" fill="white" clipPath="url(#circle)"/>
+                  <rect y="12.31" width="32" height="2.46" fill="white" clipPath="url(#circle)"/>
+                  <rect y="17.23" width="32" height="2.46" fill="white" clipPath="url(#circle)"/>
+                  <rect y="22.15" width="32" height="2.46" fill="white" clipPath="url(#circle)"/>
+                  <rect y="27.08" width="32" height="2.46" fill="white" clipPath="url(#circle)"/>
+                  <rect width="13" height="17" fill="#3C3B6E" clipPath="url(#circle)"/>
+                  {[0,1,2,3,4].map(row=>[0,1,2].map(col=>(
+                    <circle key={row*10+col} cx={2.1+col*4.3} cy={2.1+row*3.4} r="0.9" fill="white" clipPath="url(#circle)"/>
+                  )))}
+                  {[0,1,2,3].map(row=>[0,1].map(col=>(
+                    <circle key={100+row*10+col} cx={4.25+col*4.3} cy={3.8+row*3.4} r="0.9" fill="white" clipPath="url(#circle)"/>
+                  )))}
+                </svg>
+              </div>
+              <div>
+                <div style={{color:'white', fontWeight:700, fontSize:'12px', letterSpacing:'0.06em', textTransform:'uppercase'}}>Proudly American Made</div>
+                <div style={{color:'#555', fontSize:'11px', marginTop:'1px'}}>Manufactured in Fullerton, CA</div>
+              </div>
+            </div>
+
+            {/* Socials */}
+            <div style={{display:'flex', gap:'8px'}}>
+              {[['I','instagram'],['F','facebook'],['Y','youtube'],['T','tiktok']].map(([letter, name]) => (
+                <a key={name} href="#" title={name} style={{width:'34px',height:'34px',borderRadius:'8px',background:'#1a1a1a',border:'1px solid #2a2a2a',display:'flex',alignItems:'center',justifyContent:'center',color:'#666',textDecoration:'none',fontSize:'12px',fontWeight:700,transition:'all 0.15s'}}
+                  onMouseEnter={e=>{e.currentTarget.style.background='#2a2a2a';e.currentTarget.style.color='white';}}
+                  onMouseLeave={e=>{e.currentTarget.style.background='#1a1a1a';e.currentTarget.style.color='#666';}}
+                >{letter}</a>
+              ))}
+            </div>
+          </div>
+
+          {/* Shop */}
+          <div>
+            <div style={{color:'white',fontWeight:700,fontSize:'12px',letterSpacing:'0.12em',textTransform:'uppercase',marginBottom:'18px'}}>Shop</div>
+            <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+              {['Body Kits','Front Bumpers','Rear Bumpers','Side Skirts','Roof & Spoilers','Dashboard','Universal'].map(l=>(
+                <a key={l} href="KBD Results.html" style={{color:'rgba(255,255,255,0.35)',fontSize:'13px',textDecoration:'none',transition:'color 0.15s'}}
+                  onMouseEnter={e=>e.target.style.color='rgba(255,255,255,0.8)'}
+                  onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.35)'}>{l}</a>
+              ))}
+            </div>
+          </div>
+
+          {/* Company */}
+          <div>
+            <div style={{color:'white',fontWeight:700,fontSize:'12px',letterSpacing:'0.12em',textTransform:'uppercase',marginBottom:'18px'}}>Company</div>
+            <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+              {['About KBD','About Our Material','Dealers & Distributors','Discounts & Promos','Gift Cards','KBD Equipped','Lifetime Warranty','Will Call Request'].map(l=>(
+                <a key={l} href={linkHref(l)} style={{color:'rgba(255,255,255,0.35)',fontSize:'13px',textDecoration:'none',transition:'color 0.15s'}}
+                  onMouseEnter={e=>e.target.style.color='rgba(255,255,255,0.8)'}
+                  onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.35)'}>{l}</a>
+              ))}
+            </div>
+          </div>
+
+          {/* Support */}
+          <div>
+            <div style={{color:'white',fontWeight:700,fontSize:'12px',letterSpacing:'0.12em',textTransform:'uppercase',marginBottom:'18px'}}>Support</div>
+            <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+              {['Help Center','Contact Us','Order Status','Technical Support','File A Claim','My Account','Returns & Cancellations','Unfolding Guide','Paint Prep Guide'].map(l=>(
+                <a key={l} href="#" style={{color:'rgba(255,255,255,0.35)',fontSize:'13px',textDecoration:'none',transition:'color 0.15s'}}
+                  onMouseEnter={e=>e.target.style.color='rgba(255,255,255,0.8)'}
+                  onMouseLeave={e=>e.target.style.color='rgba(255,255,255,0.35)'}>{l}</a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'20px 40px',fontSize:'12px',color:'#333',flexWrap:'wrap',gap:'12px'}}>
+          <span>© {new Date().getFullYear()} KBD Body Kits. All rights reserved. Manufactured in Fullerton, CA 🇺🇸</span>
+          <div style={{display:'flex',gap:'24px'}}>
+            {['Privacy Policy','Terms of Service','Accessibility'].map(l=>(
+              <a key={l} href="#" style={{color:'#333',textDecoration:'none',transition:'color 0.15s'}}
+                onMouseEnter={e=>e.target.style.color='#666'}
+                onMouseLeave={e=>e.target.style.color='#333'}>{l}</a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+
+function WillMakeItBanner() {
+  return (
+    <div style={{
+      background:'var(--red)', padding:'56px 40px',
+      textAlign:'center', position:'relative', overflow:'hidden'
+    }}>
+      <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}}/>
+      <div style={{position:'relative', maxWidth:'1440px', margin:'0 auto', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'32px'}}>
+        <h2 style={{fontFamily:'Barlow Condensed, sans-serif',fontWeight:900,fontSize:'clamp(32px,3.5vw,52px)',color:'white',textTransform:'uppercase',letterSpacing:'0.02em',lineHeight:1,whiteSpace:'nowrap'}}>
+          Don't See Your Vehicle? — KBD Will <span style={{fontStyle:'italic'}}>Make It.</span>
+        </h2>
+        <a href="KBD Will Make It.html" style={{
+          background:'white', color:'var(--red)', padding:'14px 28px', borderRadius:'8px',
+          textDecoration:'none', fontFamily:'Barlow Condensed, sans-serif', fontWeight:900,
+          fontSize:'16px', textTransform:'uppercase', letterSpacing:'0.08em',
+          display:'flex', alignItems:'center', gap:'8px', flexShrink:0, whiteSpace:'nowrap'
+        }}>
+          Submit Your Vehicle
+          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  );
+}
+
+// ─── TWEAKS PANEL ─────────────────────────────────────────────────────────
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "accentColor": "#CC0000",
+  "darkMode": false,
+  "showInstagram": true,
+  "showCrossSell": true,
+  "heroStyle": "grid"
+}/*EDITMODE-END*/;
+
+// ─── APP ───────────────────────────────────────────────────────────────────
+function App() {
+  const result = useTweaks(TWEAK_DEFAULTS);
+  const tweaks = (result && result.tweaks) ? result.tweaks : TWEAK_DEFAULTS;
+  const TweaksUI = result ? result.TweaksUI : null;
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--red', tweaks.accentColor);
+    root.style.setProperty('--red-bright', tweaks.accentColor);
+  }, [tweaks.accentColor]);
+
+  return (
+    <div>
+      {TweaksUI && (
+        <TweaksUI>
+          <TweakSection label="Brand">
+            <TweakColor id="accentColor" label="Accent Color"/>
+          </TweakSection>
+          <TweakSection label="Sections">
+            <TweakToggle id="showInstagram" label="Instagram Feed"/>
+            <TweakToggle id="showCrossSell" label="Cross-sell Bar"/>
+          </TweakSection>
+        </TweaksUI>
+      )}
+      <AnnouncementBar/>
+      <Nav tweaks={tweaks}/>
+      <Hero tweaks={tweaks}/>
+      <TrustBar/>
+      <CategoryGrid/>
+      <FeaturedProducts tweaks={tweaks}/>
+      <WhyKBD/>
+      <ShowUsYourRideBanner/>
+      <BuildGallery/>
+      <WillMakeItBanner/>
+      <Reviews/>
+      <Footer/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

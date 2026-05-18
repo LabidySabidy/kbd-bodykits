@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KBD Equipped — Real Builds, Real Parts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --red: #CC0000; --black: #0C0C0C; --off-white: #F7F6F4; --mid-grey: #E8E6E2; --text-muted: #7A7570; --text-body: #2A2825; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text-body); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--red); color: white; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--off-white); }
+  ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes slideUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes scaleIn { from { opacity:0; transform:scale(0.96); } to { opacity:1; transform:scale(1); } }
+
+  /* Batch 6 — responsive + a11y */
+  @media (max-width: 900px) {
+    /* Generic 3-column → 1-column collapse for product / build / blog grids */
+    [style*="grid-template-columns: repeat(3,"], [style*="grid-template-columns:repeat(3,"],
+    [style*="grid-template-columns: repeat(4,"], [style*="grid-template-columns:repeat(4,"],
+    [style*="gridTemplateColumns: repeat(3"], [style*="gridTemplateColumns:repeat(3"] {
+      grid-template-columns: 1fr !important;
+    }
+    /* Two-column layouts collapse to one */
+    [style*="grid-template-columns: 1fr 1fr"], [style*="grid-template-columns:1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+    /* Drop the sticky sidebar position on small screens */
+    [style*="position: sticky"], [style*="position:sticky"] {
+      position: static !important;
+    }
+    /* Reduce nav padding on small screens */
+    nav > div { padding: 0 16px !important; gap: 12px !important; }
+    /* Page-level padding tighten */
+    section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
+  }
+  @media (max-width: 640px) {
+    /* Drop nav items beyond logo + cart */
+    nav [data-nav-link] { display: none !important; }
+    /* Bigger tap targets */
+    button, a { min-height: 32px; }
+  }
+
+  /* 6.4 Focus-visible — visible keyboard focus, not on click */
+  *:focus { outline: none; }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+  textarea:focus-visible, [role="button"]:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* Light-surface elements need a dark focus ring instead */
+  input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline-color: var(--black);
+  }
+
+  /* 6.3 — Ensure body text on dark surfaces is at least rgba(255,255,255,0.7) */
+  /* (handled per-element where critical; this is informational)*/
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ── PHOTO UTIL ─────────────────────────────────────────────────────────────
+const KBD_BASE = 'https://kbdbodykits.com/images/productimages';
+const KBD_IMG_MAP = {
+  '1487480769727-0c01c8d362b6': `${KBD_BASE}/nissan-240sx-s14-zenki-by-rob-nappyboyautomotive-3.jpg`,
+  '1605559911160-a3d95d213904': `${KBD_BASE}/nissan-240sx-s14-zenki-by-rob-nappyboyautomotive-1.jpg`,
+  '1503376780353-7e6692767b70': `${KBD_BASE}/nissan-350z-by-trippy-z33-2.jpg`,
+  '1544636331-e26879cd4d9b': `${KBD_BASE}/nissan-350z-by-trippy-z33-1.jpg`,
+  '1558618666-fcd25c85cd64': `${KBD_BASE}/scion-frs-subaru-brz-toyota-86-by-kaida-brz-1.jpg`,
+  '1583121274602-3e2820c69888': `${KBD_BASE}/scion-frs-subaru-brz-toyota-86-by-kaida-brz-3.jpg`,
+  '1580273916550-e323be2ae537': `${KBD_BASE}/bmw-e36-3-series-2dr-4dr-by-anthony-e36-1.jpg`,
+  '1494976388531-d1058494cdd8': `${KBD_BASE}/bmw-e36-3-series-2dr-4dr-by-anthony-e36-6.jpg`,
+  '1492144534655-ae79c964c9d7': `${KBD_BASE}/nissan-350z-by-trippy-z33-4.jpg`,
+  '1563720223185-11003d516935': `${KBD_BASE}/unboxing.jpg`,
+  '1591105575633-922c8897af9a': `${KBD_BASE}/37-6924-13.jpg`,
+};
+const U = (id, w=900) => (typeof id === 'string' && id.startsWith('http')) ? id : (KBD_IMG_MAP[id] || `${KBD_BASE}/bodykits.jpg`);
+const igUrl = (handle) => `https://instagram.com/${handle.replace(/^@/,'')}`;
+
+function IGHandle({ handle, color='var(--red)', size='12px' }) {
+  return (
+    <a href={igUrl(handle)} target="_blank" rel="noopener"
+      onClick={(e)=>e.stopPropagation()}
+      style={{display:'inline-flex',alignItems:'center',gap:'4px',color, fontSize:size, fontWeight:600, textDecoration:'none'}}>
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <rect x="2" y="2" width="20" height="20" rx="5"/>
+        <circle cx="12" cy="12" r="4"/>
+        <circle cx="17.5" cy="6.5" r="1.5" fill="currentColor"/>
+      </svg>
+      {handle}
+    </a>
+  );
+}
+
+// ── BUILD DATA ─────────────────────────────────────────────────────────────
+const B = 'https://kbdbodykits.com/images/productimages';
+const BUILDS = [
+  {
+    id:1, owner:'@rob_nappyboyautomotive', car:'1995 Nissan 240SX S14 Zenki', date:'2026', location:'Los Angeles, CA',
+    cover:`${B}/nissan-240sx-s14-zenki-by-rob-nappyboyautomotive-1.jpg`,
+    photos:[`${B}/nissan-240sx-s14-zenki-by-rob-nappyboyautomotive-3.jpg`,`${B}/nissan-240sx-s14-zenki-by-rob-nappyboyautomotive-1.jpg`,`${B}/nissan-240sx-s14-zenki-by-rob-nappyboyautomotive-2.jpg`,`${B}/nissan-240sx-s14-zenki-by-rob-nappyboyautomotive-4.jpg`],
+    caption:"Zenki on the S14. Pre-facelift looks always hit different. KBD's PU took two missed apexes last season and still looks day one.",
+    parts:[{ id:2, name:'Zenki Full Body Kit', price:699, cat:'Body Kits' }], tall:true,
+  },
+  {
+    id:2, owner:'@anthony.e36', car:'1998 BMW E36 3 Series', date:'2026', location:'—',
+    cover:`${B}/bmw-e36-3-series-2dr-4dr-by-anthony-e36-1.jpg`,
+    photos:[`${B}/bmw-e36-3-series-2dr-4dr-by-anthony-e36-1.jpg`,`${B}/bmw-e36-3-series-2dr-4dr-by-anthony-e36-2.jpg`,`${B}/bmw-e36-3-series-2dr-4dr-by-anthony-e36-6.jpg`,`${B}/bmw-e36-3-series-2dr-4dr-by-anthony-e36-3.jpg`],
+    caption:"E36 daily on KBD. This front bumper took a parking curb at Trader Joe's. Flexed, popped back. Zero damage. Can't say the same for my splitter lip.",
+    parts:[{ id:7, name:'Stalker Front Bumper', price:319, cat:'Front Bumpers' }], tall:false,
+  },
+  {
+    id:3, owner:'@trippy_z33', car:'2006 Nissan 350Z Z33', date:'2026', location:'Phoenix, AZ',
+    cover:`${B}/nissan-350z-by-trippy-z33-1.jpg`,
+    photos:[`${B}/nissan-350z-by-trippy-z33-1.jpg`,`${B}/nissan-350z-by-trippy-z33-2.jpg`,`${B}/nissan-350z-by-trippy-z33-3.jpg`,`${B}/nissan-350z-by-trippy-z33-4.jpg`],
+    caption:"VTX front on the Z33. Pulled the OEM bumper, lined up to factory bolt holes first try. No trimming. Paint went on smooth over the primer.",
+    parts:[{ id:4, name:'VTX Front Bumper', price:319, cat:'Front Bumpers' }], tall:false,
+  },
+  {
+    id:4, owner:'@jeeepbro', car:'2020 Jeep Wrangler JL', date:'2026', location:'Salt Lake City, UT',
+    cover:`${B}/jeep-wrangler-jl-by-jeeepbro-1.jpg`,
+    photos:[`${B}/jeep-wrangler-jl-by-jeeepbro-1.jpg`,`${B}/jeep-wrangler-jl-by-jeeepbro-2.jpg`,`${B}/jeep-wrangler-jl-by-jeeepbro-3.jpg`,`${B}/jeep-wrangler-jl-by-jeeepbro-4.jpg`],
+    caption:"Fender flares cleared the 37s with zero rubbing. JL build is finally trail-ready. KBD polyurethane took a rock scrape on Poison Spider and shrugged it off.",
+    parts:[{ id:11, name:'Fender Flare Kit', price:419, cat:'Fender Flares' }], tall:false,
+  },
+  {
+    id:5, owner:'@whoiszman', car:'2001 Chevrolet Corvette C5', date:'2026', location:'—',
+    cover:`${B}/chevrolet-corvette-c5-by-whoiszman-1.jpg`,
+    photos:[`${B}/chevrolet-corvette-c5-by-whoiszman-1.jpg`,`${B}/chevrolet-corvette-c5-by-whoiszman-2.jpg`,`${B}/chevrolet-corvette-c5-by-whoiszman-3.jpg`,`${B}/chevrolet-corvette-c5-by-whoiszman-4.jpg`],
+    caption:"Front bumper and side skirts on the C5. Clean install, factory lines all day. This is how the C5 should've looked from the factory.",
+    parts:[
+      { id:1, name:'Kyouki Front Bumper', price:319, cat:'Front Bumpers' },
+      { id:1, name:'Side Skirts', price:249, cat:'Side Skirts' },
+    ], tall:false,
+  },
+  {
+    id:6, owner:'@jasondriftz', car:'1993 Mazda RX-7 FD', date:'2026', location:'—',
+    cover:`${B}/mazda-rx7-by-jasondriftz-3.jpg`,
+    photos:[`${B}/mazda-rx7-by-jasondriftz-3.jpg`,`${B}/mazda-rx7-by-jasondriftz-4.jpg`,`${B}/mazda-rx7-by-jasondriftz-5.jpg`,`${B}/37-6087-4.jpg`],
+    caption:"Full KBD kit on the FD. Rotary power meets American polyurethane. Fitment was surgical — every panel gapped within 3mm. Worth the 10-month wait.",
+    parts:[{ id:1, name:'KBD Full Body Kit', price:849, cat:'Body Kits' }], tall:true,
+  },
+  {
+    id:7, owner:'@c5dru', car:'2001 Chevrolet Corvette C5', date:'2026', location:'—',
+    cover:`${B}/c5dru1.png`,
+    photos:[`${B}/c5dru1.png`,`${B}/c5dru2.png`,`${B}/c5dru3.png`,`${B}/37-6924-3.jpg`],
+    caption:"Kyouki full kit on the C5. Picked this kit because the lines flow with the OEM C5 shape instead of fighting it. Most aftermarket Vette kits look like a different car. This one looks like a faster Vette.",
+    parts:[{ id:1, name:'Kyouki Full Body Kit', price:749, cat:'Body Kits' }], tall:false,
+  },
+  {
+    id:8, owner:'@_rvydvr', car:'1992 Nissan 240SX S13', date:'2026', location:'—',
+    cover:`${B}/rvydvr1.jpg`,
+    photos:[`${B}/rvydvr1.jpg`,`${B}/rvydvr2.jpg`,`${B}/37-2126-3.jpg`,`${B}/37-2295-4.jpg`],
+    caption:"GP1 full kit on the S13 hatch. OEM+ vibes with KBD durability. Took a cone at the last autocross event — zero cracks, just wiped the orange off and kept going.",
+    parts:[{ id:1, name:'GP1 Full Body Kit', price:699, cat:'Body Kits' }], tall:true,
+  },
+];
+
+// ── NAV ────────────────────────────────────────────────────────────────────
+function Nav() {
+  const cartCount = (() => { try { return JSON.parse(localStorage.getItem('kbd_cart')||'[]').reduce((s,i)=>s+i.qty,0); } catch { return 0; } })();
+  return (
+    <nav style={{ position:'sticky', top:0, zIndex:1000, background:'var(--black)', borderBottom:'1px solid #222' }}>
+      <div style={{ maxWidth:'1440px', margin:'0 auto', display:'flex', alignItems:'center', padding:'0 40px', height:'64px', gap:'24px' }}>
+        <a href="KBD_Homepage.html" style={{display:'flex',alignItems:'center',height:'40px',textDecoration:'none',flexShrink:0}} aria-label="KBD Body Kits home">
+          <img src="assets/kbd-logo.png" alt="KBD Body Kits" style={{height:'72px',width:'auto',display:'block'}}/>
+        </a>
+        <div style={{flex:1,display:'flex',gap:0,alignItems:'center'}}>
+          {[['KBD_Homepage.html','Shop By Vehicle'],['KBD_Results.html','Body Kits'],['KBD_Equipped.html','KBD Equipped'],['KBD_Will_Make_It.html','Will Make It'],['KBD_About.html','About'],['KBD_Blog.html','Blog']].map(([href,label])=>(
+            <a key={label} href={href} style={{
+              color: label==='KBD Equipped' ? 'white' : '#aaa',
+              textDecoration:'none', padding:'0 14px', height:'64px', display:'flex', alignItems:'center',
+              fontSize:'13px', fontWeight:500, letterSpacing:'0.04em', transition:'color 0.15s',
+              borderBottom: label==='KBD Equipped' ? '2px solid var(--red)' : '2px solid transparent'
+            }}
+            onMouseEnter={e=>e.currentTarget.style.color='white'}
+            onMouseLeave={e=>{if(label!=='KBD Equipped') e.currentTarget.style.color='#aaa';}}
+            >{label}</a>
+          ))}
+        </div>
+        <a href="KBD_Order_Status.html" style={{ color:'#aaa', fontSize:'13px', textDecoration:'none', display:'flex', alignItems:'center', gap:'6px' }}>
+          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Track Order
+        </a>
+        <a href="KBD_Equipped.html#submit" style={{
+          background:'rgba(255,255,255,0.08)', border:'1px solid rgba(255,255,255,0.15)',
+          borderRadius:'7px', color:'white', padding:'8px 16px', fontSize:'13px',
+          fontWeight:600, textDecoration:'none', display:'flex', alignItems:'center', gap:'6px'
+        }}>
+          + Submit Your Build
+        </a>
+        <button onClick={()=>window.location.href='KBD_Checkout.html'} style={{ background:'var(--red)', border:'none', cursor:'pointer', color:'white', padding:'8px 18px', borderRadius:'6px', fontWeight:600, fontSize:'13px', display:'flex', alignItems:'center', gap:'6px', fontFamily:'DM Sans, sans-serif' }}>
+          <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Cart ({cartCount})
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+// ── LIGHTBOX ───────────────────────────────────────────────────────────────
+function Lightbox({ build, onClose }) {
+  const [activePhoto, setActivePhoto] = useState(0);
+  const [imgErr, setImgErr] = useState({});
+
+  useEffect(() => {
+    const onKey = e => { if(e.key==='Escape') onClose(); if(e.key==='ArrowRight') setActivePhoto(p=>(p+1)%build.photos.length); if(e.key==='ArrowLeft') setActivePhoto(p=>(p-1+build.photos.length)%build.photos.length); };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+  }, [build, onClose]);
+
+  return (
+    <div onClick={onClose} style={{
+      position:'fixed', inset:0, background:'rgba(0,0,0,0.92)', zIndex:9999,
+      display:'flex', alignItems:'center', justifyContent:'center',
+      animation:'fadeIn 0.2s ease', padding:'24px'
+    }}>
+      <div onClick={e=>e.stopPropagation()} style={{
+        background:'var(--black)', borderRadius:'20px', overflow:'hidden',
+        width:'100%', maxWidth:'1100px', maxHeight:'92vh', display:'flex', flexDirection:'column',
+        animation:'scaleIn 0.25s ease', border:'1px solid #2a2a2a'
+      }}>
+        {/* Header */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'20px 28px', borderBottom:'1px solid #1e1e1e', flexShrink:0 }}>
+          <div>
+            <div style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'24px', color:'white', textTransform:'uppercase', lineHeight:1 }}>{build.car}</div>
+            <div style={{ color:'#666', fontSize:'13px', marginTop:'4px' }}>Build by <IGHandle handle={build.owner} color="rgba(255,255,255,0.7)" size="13px"/> · {build.location} · {build.date}</div>
+          </div>
+          <button aria-label="Close" onClick={onClose} style={{ background:'rgba(255,255,255,0.08)', border:'none', borderRadius:'8px', color:'#888', width:'36px', height:'36px', cursor:'pointer', fontSize:'18px', display:'flex', alignItems:'center', justifyContent:'center' }}>×</button>
+        </div>
+
+        {/* Scrollable body */}
+        <div style={{ overflowY:'auto', flex:1 }}>
+          {/* Main image */}
+          <div style={{ position:'relative', background:'#111', aspectRatio:'16/9' }}>
+            {!imgErr[activePhoto] ? (
+              <img src={U(build.photos[activePhoto], 1200)} alt={build.car}
+                onError={()=>setImgErr(e=>({...e,[activePhoto]:true}))}
+                style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}/>
+            ) : (
+              <div style={{ width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center', color:'#444', fontSize:'13px' }}>Photo unavailable</div>
+            )}
+            {/* Nav arrows */}
+            {build.photos.length > 1 && (
+              <>
+                <button aria-label="Previous photo" onClick={()=>setActivePhoto(p=>(p-1+build.photos.length)%build.photos.length)} style={{ position:'absolute', left:'16px', top:'50%', transform:'translateY(-50%)', background:'rgba(0,0,0,0.6)', border:'none', borderRadius:'50%', width:'44px', height:'44px', cursor:'pointer', color:'white', fontSize:'20px', display:'flex', alignItems:'center', justifyContent:'center', backdropFilter:'blur(4px)' }}>‹</button>
+                <button aria-label="Next photo" onClick={()=>setActivePhoto(p=>(p+1)%build.photos.length)} style={{ position:'absolute', right:'16px', top:'50%', transform:'translateY(-50%)', background:'rgba(0,0,0,0.6)', border:'none', borderRadius:'50%', width:'44px', height:'44px', cursor:'pointer', color:'white', fontSize:'20px', display:'flex', alignItems:'center', justifyContent:'center', backdropFilter:'blur(4px)' }}>›</button>
+                <div style={{ position:'absolute', bottom:'16px', left:'50%', transform:'translateX(-50%)', display:'flex', gap:'6px' }}>
+                  {build.photos.map((_,i) => (
+                    <button key={i} onClick={()=>setActivePhoto(i)} style={{ width: i===activePhoto?'20px':'6px', height:'6px', borderRadius:'3px', background:i===activePhoto?'white':'rgba(255,255,255,0.4)', border:'none', cursor:'pointer', transition:'all 0.2s', padding:0 }}/>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Thumbnails */}
+          <div style={{ display:'flex', gap:'8px', padding:'16px 24px', background:'#0a0a0a', borderBottom:'1px solid #1e1e1e' }}>
+            {build.photos.map((photoId, i) => (
+              <div key={i} onClick={()=>setActivePhoto(i)} style={{
+                width:'72px', height:'52px', borderRadius:'6px', overflow:'hidden', cursor:'pointer', flexShrink:0,
+                border: `2px solid ${i===activePhoto?'var(--red)':'transparent'}`, transition:'border-color 0.15s'
+              }}>
+                {!imgErr[i] ? (
+                  <img src={U(photoId,200)} alt="" onError={()=>setImgErr(e=>({...e,[i]:true}))} style={{width:'100%',height:'100%',objectFit:'cover'}}/>
+                ) : (
+                  <div style={{width:'100%',height:'100%',background:'#222'}}/>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Caption */}
+          <div style={{ padding:'24px 28px', borderBottom:'1px solid #1e1e1e' }}>
+            <p style={{ color:'rgba(255,255,255,0.55)', fontSize:'14px', lineHeight:1.75, fontStyle:'italic' }}>
+              "{build.caption}"
+            </p>
+          </div>
+
+          {/* Parts used */}
+          <div style={{ padding:'24px 28px' }}>
+            <div style={{ fontSize:'11px', letterSpacing:'0.18em', textTransform:'uppercase', color:'var(--red)', fontWeight:700, marginBottom:'16px' }}>
+              This Build Uses the Following KBD Parts
+            </div>
+            <div style={{ display:'grid', gridTemplateColumns:`repeat(${Math.min(build.parts.length,3)}, 1fr)`, gap:'12px', marginBottom:'18px' }}>
+              {build.parts.map((part, i) => (
+                <a key={i} href={`KBD_Product.html?id=${part.id}`} style={{ textDecoration:'none', display:'flex', alignItems:'center', gap:'12px', padding:'14px 16px', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:'10px', transition:'all 0.15s', cursor:'pointer' }}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor='rgba(204,0,0,0.4)';e.currentTarget.style.background='rgba(204,0,0,0.06)';}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor='rgba(255,255,255,0.08)';e.currentTarget.style.background='rgba(255,255,255,0.04)';}}>
+                  <div style={{ width:'40px', height:'40px', borderRadius:'8px', background:'rgba(255,255,255,0.06)', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <svg width="18" height="18" fill="none" stroke="var(--red)" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                  </div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ color:'white', fontWeight:600, fontSize:'13px', lineHeight:1.3 }}>{part.name}</div>
+                    <div style={{ color:'#555', fontSize:'11px', marginTop:'2px' }}>{part.cat}</div>
+                  </div>
+                  <div style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:800, fontSize:'18px', color:'white', flexShrink:0 }}>${part.price}</div>
+                </a>
+              ))}
+            </div>
+            <BuildCartCTA build={build}/>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BuildCartCTA({ build }) {
+  const [adding, setAdding] = React.useState(false);
+  const [added, setAdded] = React.useState(false);
+  const total = build.parts.reduce((s,p)=>s+p.price, 0);
+
+  function addAll() {
+    if (adding || added) return;
+    setAdding(true);
+    try {
+      const cart = JSON.parse(localStorage.getItem('kbd_cart') || '[]');
+      build.parts.forEach(p => {
+        const existing = cart.find(i => i.id === p.id);
+        if (existing) existing.qty = (existing.qty||1) + 1;
+        else cart.push({ id:p.id, name:p.name, vehicle:build.car, price:p.price, qty:1, cat:p.cat, img:build.cover });
+      });
+      localStorage.setItem('kbd_cart', JSON.stringify(cart));
+      setAdded(true);
+      setTimeout(()=>{ setAdded(false); setAdding(false); }, 2400);
+    } catch(e){ setAdding(false); }
+  }
+
+  return (
+    <button onClick={addAll} style={{
+      width:'100%', marginTop:'4px', display:'flex', alignItems:'center', justifyContent:'center', gap:'10px',
+      background: added ? '#2d8a50' : 'var(--red)', color:'white', border:'none',
+      borderRadius:'10px', padding:'14px', fontFamily:'Barlow Condensed, sans-serif',
+      fontWeight:900, fontSize:'16px', letterSpacing:'0.06em', textTransform:'uppercase', cursor:'pointer',
+      transition:'background 0.2s'
+    }}>
+      {added ? (
+        <>
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+          Build added — keep shopping
+        </>
+      ) : (
+        <>
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Add Full Build to Cart — ${total.toLocaleString()}
+        </>
+      )}
+    </button>
+  );
+}
+
+// ── BUILD CARD ─────────────────────────────────────────────────────────────
+function BuildCard({ build, onClick }) {
+  const [hovered, setHovered] = useState(false);
+  const [imgErr, setImgErr] = useState(false);
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={onClick}
+      style={{
+        borderRadius:'12px', overflow:'hidden', cursor:'pointer', position:'relative',
+        aspectRatio: build.tall ? '3/4' : '4/3',
+        gridRow: build.tall ? 'span 2' : 'span 1',
+        background:'#1a1a1a',
+        boxShadow: hovered ? '0 20px 60px rgba(0,0,0,0.3)' : '0 4px 16px rgba(0,0,0,0.08)',
+        transform: hovered ? 'scale(1.02)' : 'scale(1)',
+        transition:'transform 0.3s ease, box-shadow 0.3s ease'
+      }}
+    >
+      {/* Photo */}
+      {!imgErr ? (
+        <img src={U(build.cover, 800)} alt={build.car} onError={()=>setImgErr(true)}
+          style={{ width:'100%', height:'100%', objectFit:'cover', display:'block', transition:'transform 0.5s ease', transform: hovered?'scale(1.06)':'scale(1)' }}/>
+      ) : (
+        <div style={{ width:'100%', height:'100%', background:'#1a1a1a', display:'flex', alignItems:'center', justifyContent:'center', color:'#333', fontSize:'11px', textTransform:'uppercase', letterSpacing:'0.1em' }}>Photo</div>
+      )}
+
+      {/* Base overlay — always visible at bottom */}
+      <div style={{
+        position:'absolute', inset:0,
+        background:'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 50%, transparent 100%)',
+        transition:'opacity 0.3s'
+      }}/>
+
+      {/* Hover overlay */}
+      <div style={{
+        position:'absolute', inset:0, background:'rgba(0,0,0,0.45)',
+        opacity: hovered?1:0, transition:'opacity 0.25s',
+        display:'flex', alignItems:'center', justifyContent:'center'
+      }}>
+        <div style={{ background:'white', borderRadius:'50%', width:'52px', height:'52px', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 8px 24px rgba(0,0,0,0.3)' }}>
+          <svg width="20" height="20" fill="none" stroke="var(--black)" strokeWidth="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+      </div>
+
+      {/* Info — always visible at bottom */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, padding:'20px' }}>
+        <div style={{
+          fontSize:'11px', letterSpacing:'0.12em', textTransform:'uppercase',
+          color:'rgba(255,255,255,0.5)', fontWeight:600, marginBottom:'4px',
+          transform: hovered?'translateY(0)':'translateY(4px)',
+          transition:'transform 0.3s, opacity 0.3s',
+          opacity: hovered?1:0
+        }}>{build.date} · {build.location}</div>
+        <div style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'20px', color:'white', textTransform:'uppercase', lineHeight:1, letterSpacing:'0.01em' }}>{build.car}</div>
+        <div style={{
+          color:'rgba(255,255,255,0.55)', fontSize:'13px', marginTop:'4px',
+          display:'flex', alignItems:'center', gap:'5px'
+        }}>
+          <span style={{ width:'4px', height:'4px', borderRadius:'50%', background:'var(--red)', display:'inline-block' }}/>
+          <IGHandle handle={build.owner}/>
+        </div>
+      </div>
+
+      {/* Parts count badge */}
+      <div style={{
+        position:'absolute', top:'14px', right:'14px',
+        background:'rgba(0,0,0,0.7)', backdropFilter:'blur(8px)',
+        border:'1px solid rgba(255,255,255,0.12)', borderRadius:'100px',
+        padding:'4px 10px', fontSize:'11px', color:'rgba(255,255,255,0.7)',
+        fontWeight:600, display:'flex', alignItems:'center', gap:'5px'
+      }}>
+        <svg width="10" height="10" fill="none" stroke="var(--red)" strokeWidth="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        {build.parts.length} KBD {build.parts.length===1?'part':'parts'}
+      </div>
+    </div>
+  );
+}
+
+// ── SUBMIT FORM ────────────────────────────────────────────────────────────
+function SubmitBuild() {
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({ name:'', car:'', instagram:'', email:'', caption:'' });
+  const update = (k,v) => setForm(f=>({...f,[k]:v}));
+  const isValid = form.name && form.car && form.email;
+
+  if (submitted) {
+    return (
+      <div style={{ textAlign:'center', padding:'48px 0' }}>
+        <div style={{ width:'64px', height:'64px', borderRadius:'50%', background:'rgba(204,0,0,0.12)', border:'2px solid var(--red)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 20px' }}>
+          <svg width="28" height="28" fill="none" stroke="var(--red)" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <h3 style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'28px', textTransform:'uppercase', color:'white', marginBottom:'8px' }}>Build Submitted!</h3>
+        <p style={{ color:'#666', fontSize:'14px' }}>We'll review and feature it in the KBD Equipped gallery. Stay tuned!</p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px', marginBottom:'12px' }}>
+        {[['name','Your Name (or @handle)','@your_handle'],['car','Vehicle (Year Make Model)','1995 Nissan 240SX S14 Zenki'],['instagram','Instagram Handle','@yourhandle'],['email','Email Address','you@email.com']].map(([key,label,ph])=>(
+          <div key={key}>
+            <label style={{ display:'block', fontSize:'10px', fontWeight:600, letterSpacing:'0.15em', textTransform:'uppercase', color:'#666', marginBottom:'6px' }}>{label}</label>
+            <input value={form[key]} onChange={e=>update(key,e.target.value)} placeholder={ph}
+              style={{ width:'100%', background:'rgba(255,255,255,0.06)', border:'1.5px solid rgba(255,255,255,0.1)', borderRadius:'8px', padding:'11px 14px', fontSize:'14px', color:'white', fontFamily:'DM Sans, sans-serif', outline:'none', transition:'border-color 0.15s' }}
+              onFocus={e=>e.target.style.borderColor='rgba(255,255,255,0.3)'}
+              onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginBottom:'16px' }}>
+        <label style={{ display:'block', fontSize:'10px', fontWeight:600, letterSpacing:'0.15em', textTransform:'uppercase', color:'#666', marginBottom:'6px' }}>Tell Us About Your Build</label>
+        <textarea value={form.caption} onChange={e=>update('caption',e.target.value)} placeholder="What KBD parts did you use? How was the install? Any tips for others?" rows={3}
+          style={{ width:'100%', background:'rgba(255,255,255,0.06)', border:'1.5px solid rgba(255,255,255,0.1)', borderRadius:'8px', padding:'11px 14px', fontSize:'14px', color:'white', fontFamily:'DM Sans, sans-serif', resize:'vertical', outline:'none', lineHeight:1.6 }}
+          onFocus={e=>e.target.style.borderColor='rgba(255,255,255,0.3)'}
+          onBlur={e=>e.target.style.borderColor='rgba(255,255,255,0.1)'}/>
+      </div>
+      <button onClick={()=>isValid&&setSubmitted(true)} style={{
+        background: isValid?'var(--red)':'rgba(255,255,255,0.08)',
+        color: isValid?'white':'rgba(255,255,255,0.3)',
+        border:'none', borderRadius:'10px', padding:'14px 28px',
+        fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'16px',
+        letterSpacing:'0.06em', textTransform:'uppercase', cursor:isValid?'pointer':'default',
+        display:'flex', alignItems:'center', gap:'8px'
+      }}>
+        Submit My Build
+        <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  );
+}
+
+// ── FILTER BAR ─────────────────────────────────────────────────────────────
+function FilterBar({ active, setActive }) {
+  const filters = ['All','Nissan','BMW','Lexus','Mazda','Jeep','Ford','Toyota','Subaru','Chevrolet'];
+  return (
+    <div style={{ display:'flex', gap:'6px', flexWrap:'wrap' }}>
+      {filters.map(f => (
+        <button key={f} onClick={()=>setActive(f)} style={{
+          background: active===f?'var(--black)':'white',
+          color: active===f?'white':'var(--text-muted)',
+          border:`1.5px solid ${active===f?'var(--black)':'var(--mid-grey)'}`,
+          borderRadius:'100px', padding:'7px 16px', fontSize:'13px', fontWeight:active===f?600:400,
+          cursor:'pointer', transition:'all 0.15s', fontFamily:'DM Sans, sans-serif'
+        }}>{f}</button>
+      ))}
+    </div>
+  );
+}
+
+// ── MAIN APP ───────────────────────────────────────────────────────────────
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{"accentColor":"#CC0000"}/*EDITMODE-END*/;
+
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [activeBuild, setActiveBuild] = useState(null);
+  const [filter, setFilter] = useState('All');
+
+  // Auto-open build from URL hash
+  React.useEffect(() => {
+    const hash = window.location.hash.replace('#','');
+    const params = new URLSearchParams(hash);
+    const buildId = parseInt(params.get('build'));
+    if (buildId) {
+      const build = BUILDS.find(b => b.id === buildId);
+      if (build) setTimeout(() => setActiveBuild(build), 200);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--red', tweaks.accentColor);
+  }, [tweaks.accentColor]);
+
+  const filtered = filter==='All' ? BUILDS : BUILDS.filter(b => b.car.includes(filter));
+
+  return (
+    <div>
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="Brand">
+          <TweakColor label="Accent" value={tweaks.accentColor} onChange={v=>setTweak('accentColor',v)}/>
+        </TweakSection>
+      </TweaksPanel>
+      <div style={{ background:'var(--red)', color:'white', textAlign:'center', padding:'9px 16px', fontSize:'12px', fontWeight:600, letterSpacing:'0.12em', textTransform:'uppercase', fontFamily:'Barlow Condensed, sans-serif' }}>Made in USA — Orange County, CA for almost 50 years</div>
+      <Nav/>
+
+      {/* Hero */}
+      <div style={{
+        background:'var(--black)', padding:'72px 40px 64px',
+        position:'relative', overflow:'hidden', borderBottom:'1px solid #1a1a1a'
+      }}>
+        <div style={{ position:'absolute', inset:0, backgroundImage:`url('${KBD_BASE}/nissan-240sx-s14-zenki-by-rob-nappyboyautomotive-1.jpg')`, backgroundSize:'cover', backgroundPosition:'center', opacity:0.22 }}/>
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.45) 50%, rgba(0,0,0,0.65) 100%)', pointerEvents:'none' }}/>
+        <div style={{ maxWidth:'1440px', margin:'0 auto', position:'relative' }}>
+          <div style={{ fontSize:'11px', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--red)', fontWeight:700, marginBottom:'16px' }}>Community Gallery</div>
+          <h1 style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'clamp(48px,7vw,88px)', color:'white', textTransform:'uppercase', lineHeight:0.9, marginBottom:'16px' }}>
+            KBD<br/><span style={{color:'var(--red)'}}>Equipped</span>
+          </h1>
+          <p style={{ color:'rgba(255,255,255,0.4)', fontSize:'16px', maxWidth:'480px', lineHeight:1.7 }}>
+            Real builds from real owners. Every car here runs KBD parts — hover to see the details, click to explore the full gallery and parts list.
+          </p>
+          <div style={{ display:'flex', gap:'32px', marginTop:'28px' }}>
+            {(() => {
+              const uniqueParts = new Set();
+              BUILDS.forEach(b => b.parts.forEach(p => uniqueParts.add(p.id)));
+              const latest = BUILDS[0]?.date || '—';
+              return [[String(BUILDS.length),'Builds Featured'],[String(uniqueParts.size),'KBD Parts Tagged'],[latest,'Latest Entry']];
+            })().map(([n,l])=>(
+              <div key={l}>
+                <div style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'32px', color:'white', lineHeight:1 }}>{n}</div>
+                <div style={{ color:'#666', fontSize:'12px', letterSpacing:'0.06em', textTransform:'uppercase' }}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Filters + grid */}
+      <div style={{ maxWidth:'1440px', margin:'0 auto', padding:'40px 40px 80px' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'28px', flexWrap:'wrap', gap:'16px' }}>
+          <FilterBar active={filter} setActive={setFilter}/>
+          <div style={{ color:'var(--text-muted)', fontSize:'13px' }}>{filtered.length} build{filtered.length!==1?'s':''}</div>
+        </div>
+
+        {/* Masonry-style grid */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gridAutoRows:'220px', gap:'16px' }}>
+          {filtered.map(build => (
+            <BuildCard key={build.id} build={build} onClick={() => setActiveBuild(build)}/>
+          ))}
+        </div>
+      </div>
+
+      {/* Submit section */}
+      <div id="submit" style={{ background:'var(--black)', padding:'80px 40px', borderTop:'1px solid #1a1a1a' }}>
+        <div style={{ maxWidth:'1440px', margin:'0 auto', display:'grid', gridTemplateColumns:'1fr 1fr', gap:'80px', alignItems:'center' }}>
+          <div>
+            <div style={{ fontSize:'11px', letterSpacing:'0.2em', textTransform:'uppercase', color:'var(--red)', fontWeight:700, marginBottom:'16px' }}>Share Your Build</div>
+            <h2 style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'clamp(36px,4vw,60px)', color:'white', textTransform:'uppercase', lineHeight:0.9, marginBottom:'20px' }}>
+              Running<br/>KBD Parts?<br/><span style={{color:'var(--red)',fontStyle:'italic'}}>Show It Off.</span>
+            </h2>
+            <p style={{ color:'rgba(255,255,255,0.4)', fontSize:'15px', lineHeight:1.75, maxWidth:'360px' }}>
+              Submit your build and get featured in the KBD Equipped gallery. We'll tag your Instagram and link every KBD part on your car.
+            </p>
+          </div>
+          <SubmitBuild/>
+        </div>
+      </div>
+
+      {/* Lightbox */}
+      {activeBuild && <Lightbox build={activeBuild} onClose={() => setActiveBuild(null)}/>}
+
+      <footer style={{ background:'var(--black)', color:'rgba(255,255,255,0.5)', padding:'32px 40px', textAlign:'center', display:'flex', justifyContent:'center', alignItems:'center', gap:'12px', flexWrap:'wrap', borderTop:'1px solid #1a1a1a' }}>
+        <img src="assets/kbd-logo.png" alt="KBD Body Kits" style={{height:'112px',width:'auto',display:'block'}}/>
+        <span style={{fontSize:'12px',color:'#555'}}>Manufactured in Fullerton, CA</span>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

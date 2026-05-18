@@ -1,0 +1,17 @@
+# Harness files
+VISION.md
+PLAN.md
+PROGRESS.md
+TASKS.md
+PRD.md
+
+# Vercel
+.vercel
+
+# IDE
+.agent
+.vscode
+
+# OS
+Thumbs.db
+.DS_Store

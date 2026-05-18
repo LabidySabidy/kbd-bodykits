@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Paddock — KBD Blog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700;1,900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --red: #CC0000; --black: #0C0C0C; --off-white: #F7F6F4; --mid-grey: #E8E6E2; --text-muted: #7A7570; --text-body: #2A2825; --cream: #F5F2EC; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text-body); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--red); color: white; }
+  @keyframes slideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Batch 6 — responsive + a11y */
+  @media (max-width: 900px) {
+    /* Generic 3-column → 1-column collapse for product / build / blog grids */
+    [style*="grid-template-columns: repeat(3,"], [style*="grid-template-columns:repeat(3,"],
+    [style*="grid-template-columns: repeat(4,"], [style*="grid-template-columns:repeat(4,"],
+    [style*="gridTemplateColumns: repeat(3"], [style*="gridTemplateColumns:repeat(3"] {
+      grid-template-columns: 1fr !important;
+    }
+    /* Two-column layouts collapse to one */
+    [style*="grid-template-columns: 1fr 1fr"], [style*="grid-template-columns:1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+    /* Drop the sticky sidebar position on small screens */
+    [style*="position: sticky"], [style*="position:sticky"] {
+      position: static !important;
+    }
+    /* Reduce nav padding on small screens */
+    nav > div { padding: 0 16px !important; gap: 12px !important; }
+    /* Page-level padding tighten */
+    section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
+  }
+  @media (max-width: 640px) {
+    /* Drop nav items beyond logo + cart */
+    nav [data-nav-link] { display: none !important; }
+    /* Bigger tap targets */
+    button, a { min-height: 32px; }
+  }
+
+  /* 6.4 Focus-visible — visible keyboard focus, not on click */
+  *:focus { outline: none; }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+  textarea:focus-visible, [role="button"]:focus-visible {
+    outline: 2px solid var(--red);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* Light-surface elements need a dark focus ring instead */
+  input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline-color: var(--black);
+  }
+
+  /* 6.3 — Ensure body text on dark surfaces is at least rgba(255,255,255,0.7) */
+  /* (handled per-element where critical; this is informational)*/
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="kbd-shell.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const B = 'https://kbdbodykits.com/images/productimages';
+const POSTS = [
+  { id:'paint-prep-5-steps', title:'How to Paint Prep Polyurethane in 5 Steps', category:'How-To', date:'May 12, 2026', readTime:'6 min read',
+    excerpt:"PU holds paint better than fiberglass — if you prep it right. Skip the wax-and-grease step and you'll be chasing fish-eye for hours.",
+    photoId:`${B}/37-6924-13.jpg`, author:'KBD Shop Team', featured:true },
+  { id:'s13-vs-s14', title:'S13 vs S14: Which Chassis for Your First Drift Build?', category:'Build Guides', date:'May 4, 2026', readTime:'8 min read',
+    excerpt:"Both are S-chassis. Both make great drift cars. But they handle, parts-supply, and rust completely differently. Here's the honest breakdown before you spend the money.",
+    photoId:`${B}/nissan-240sx-s14-zenki-by-rob-nappyboyautomotive-1.jpg`, author:'KBD Shop Team' },
+  { id:'pu-vs-fiberglass', title:"The Math Behind Why PU Won't Crack Like Fiberglass", category:'Material Science', date:'April 22, 2026', readTime:'5 min read',
+    excerpt:"Polyurethane is a thermoset elastomer. Fiberglass is a thermoset composite. Both sound technical — only one survives a parking block. Here's what actually happens at the molecular level.",
+    photoId:`${B}/fronts.jpg`, author:'KBD Shop Team' },
+  { id:'fd-2026-sponsorship', title:'KBD at Formula Drift: 2026 Sponsorship Lineup', category:'News', date:'April 10, 2026', readTime:'4 min read',
+    excerpt:"Three drivers, three platforms, three KBD kits hitting the FD wall this season. Meet the team we're backing and the cars they're running.",
+    photoId:`${B}/nissan-350z-by-trippy-z33-1.jpg`, author:'KBD Shop Team' },
+  { id:'unfolding-guide', title:'Unfolding Guide: Getting Your Kit From Box to Bumper', category:'How-To', date:'March 28, 2026', readTime:'7 min read',
+    excerpt:'PU ships folded to save freight. The first thing every new customer asks: "how do I get it back into shape?" Answer: hairdryer, sun, and 20 minutes of patience.',
+    photoId:`${B}/unboxing.jpg`, author:'KBD Shop Team' },
+  { id:'build-of-month-may', title:"Customer Build of the Month: @rob_nappyboyautomotive's S14 Zenki", category:'Builds', date:'May 1, 2026', readTime:'5 min read',
+    excerpt:'A clean LA-based S14 Zenki running our pre-facelift full body kit. Two seasons in, zero cracks, zero regrets. We sat down with Rob to break down the build.',
+    photoId:`${B}/nissan-240sx-s14-zenki-by-rob-nappyboyautomotive-3.jpg`, author:'KBD Shop Team' },
+];
+
+function CategoryPill({ label }) {
+  return <span style={{ display:'inline-block', background:'rgba(204,0,0,0.08)', color:'var(--red)', padding:'4px 10px', borderRadius:'4px', fontSize:'10px', fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase' }}>{label}</span>;
+}
+
+function PostThumb({ post, height='100%' }) {
+  if (post.photoId) {
+    return (
+      <div style={{ width:'100%', height, background:'#1a1a1a', overflow:'hidden' }}>
+        <img src={post.photoId} alt={post.title} style={{width:'100%',height:'100%',objectFit:'cover',display:'block'}}/>
+      </div>
+    );
+  }
+  return (
+    <div style={{ width:'100%', height, background:'#1A1A1A', display:'flex', alignItems:'flex-end', padding:'10px 12px' }}>
+      <span style={{ fontFamily:'ui-monospace, monospace', fontSize:'9px', letterSpacing:'0.08em', color:'rgba(255,255,255,0.35)', textTransform:'uppercase', lineHeight:1.3 }}>
+        <span style={{color:'var(--red)',fontWeight:700}}>placeholder</span> — real photo: {post.title}
+      </span>
+    </div>
+  );
+}
+
+function BlogIndex({ onOpen }) {
+  const [activeCategory, setActiveCategory] = useState('All');
+  const categories = ['All','How-To','Build Guides','Material Science','Builds','News'];
+  const filtered = activeCategory === 'All' ? POSTS : POSTS.filter(p => p.category === activeCategory);
+  const featured = POSTS.find(p => p.featured);
+  const rest = filtered.filter(p => !p.featured || activeCategory !== 'All');
+
+  return (
+    <div>
+      <section style={{ background:'var(--black)', padding:'72px 40px 56px', position:'relative', overflow:'hidden' }}>
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(12,12,12,0.95) 100%)', pointerEvents:'none' }}/>
+        <div style={{ maxWidth:'1200px', margin:'0 auto', position:'relative' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:'12px', marginBottom:'20px' }}>
+            <span style={{ width:'14px', height:'4px', background:'var(--red)' }}/>
+            <span style={{ color:'rgba(255,255,255,0.7)', fontSize:'11px', letterSpacing:'0.22em', textTransform:'uppercase', fontWeight:700 }}>The Paddock — KBD Blog</span>
+          </div>
+          <h1 style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'clamp(48px,7vw,96px)', color:'white', textTransform:'uppercase', lineHeight:0.9, marginBottom:'14px' }}>
+            Build Notes,<br/>From the Shop Floor.
+          </h1>
+          <p style={{ color:'rgba(255,255,255,0.55)', fontSize:'16px', lineHeight:1.75, maxWidth:'620px' }}>
+            How-to guides, build features, material deep dives, and the occasional FD sponsorship announcement. Written by the people who actually pull the molds.
+          </p>
+        </div>
+      </section>
+
+      {activeCategory === 'All' && featured && (
+        <section style={{ background:'var(--cream)', padding:'64px 40px 32px' }}>
+          <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
+            <div onClick={()=>onOpen(featured)} style={{ cursor:'pointer', display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:'40px', alignItems:'stretch', background:'white', border:'1px solid var(--mid-grey)', borderRadius:'16px', overflow:'hidden', transition:'box-shadow 0.2s' }}
+              onMouseEnter={e=>e.currentTarget.style.boxShadow='0 16px 48px rgba(0,0,0,0.1)'}
+              onMouseLeave={e=>e.currentTarget.style.boxShadow='none'}>
+              <PostThumb post={featured} height="380px"/>
+              <div style={{ padding:'40px 36px', display:'flex', flexDirection:'column', justifyContent:'center' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'10px', marginBottom:'16px' }}>
+                  <CategoryPill label={featured.category}/>
+                  <span style={{ fontSize:'11px', fontWeight:700, letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--red)' }}>● Featured</span>
+                </div>
+                <h2 style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'clamp(28px,3vw,42px)', textTransform:'uppercase', color:'var(--black)', lineHeight:1, marginBottom:'18px' }}>{featured.title}</h2>
+                <p style={{ fontSize:'15px', color:'var(--text-body)', lineHeight:1.75, marginBottom:'20px' }}>{featured.excerpt}</p>
+                <div style={{ display:'flex', alignItems:'center', gap:'12px', color:'var(--text-muted)', fontSize:'13px' }}>
+                  <span>{featured.author}</span><span>·</span><span>{featured.date}</span><span>·</span><span>{featured.readTime}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section style={{ background:'var(--cream)', padding:'32px 40px 96px' }}>
+        <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'28px', flexWrap:'wrap', gap:'16px' }}>
+            <div style={{ display:'flex', gap:'6px', flexWrap:'wrap' }}>
+              {categories.map(c => (
+                <button key={c} onClick={()=>setActiveCategory(c)} style={{
+                  background: activeCategory===c?'var(--black)':'white',
+                  color: activeCategory===c?'white':'var(--text-muted)',
+                  border:`1.5px solid ${activeCategory===c?'var(--black)':'var(--mid-grey)'}`,
+                  borderRadius:'100px', padding:'7px 16px', fontSize:'13px', fontWeight: activeCategory===c?600:400,
+                  cursor:'pointer', fontFamily:'DM Sans, sans-serif'
+                }}>{c}</button>
+              ))}
+            </div>
+            <div style={{ color:'var(--text-muted)', fontSize:'13px' }}>{rest.length} post{rest.length!==1?'s':''}</div>
+          </div>
+
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'24px' }}>
+            {rest.map(p => (
+              <article key={p.id} onClick={()=>onOpen(p)} style={{ background:'white', border:'1px solid var(--mid-grey)', borderRadius:'12px', overflow:'hidden', cursor:'pointer', transition:'transform 0.2s, box-shadow 0.2s', display:'flex', flexDirection:'column' }}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 12px 32px rgba(0,0,0,0.08)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.boxShadow='none';}}>
+                <div style={{ aspectRatio:'4/3', overflow:'hidden' }}><PostThumb post={p} height="100%"/></div>
+                <div style={{ padding:'18px 20px 20px', flex:1, display:'flex', flexDirection:'column' }}>
+                  <div style={{ marginBottom:'10px' }}><CategoryPill label={p.category}/></div>
+                  <h3 style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'22px', textTransform:'uppercase', color:'var(--black)', lineHeight:1.05, marginBottom:'8px' }}>{p.title}</h3>
+                  <p style={{ fontSize:'13px', color:'var(--text-body)', lineHeight:1.7, marginBottom:'14px', flex:1 }}>{p.excerpt}</p>
+                  <div style={{ display:'flex', alignItems:'center', gap:'8px', color:'var(--text-muted)', fontSize:'12px' }}>
+                    <span>{p.date}</span><span>·</span><span>{p.readTime}</span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function BlogPost({ post, onBack }) {
+  const related = POSTS.filter(p => p.id !== post.id).slice(0, 2);
+  return (
+    <div style={{ animation:'slideUp 0.3s ease' }}>
+      <section style={{ background:'var(--black)', padding:'56px 40px 80px', position:'relative', overflow:'hidden' }}>
+        {post.photoId && (
+          <div style={{ position:'absolute', inset:0, backgroundImage:`url('https://images.unsplash.com/photo-${post.photoId}?auto=format&fit=crop&w=1920&q=70')`, backgroundSize:'cover', backgroundPosition:'center', opacity:0.28 }}/>
+        )}
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.85) 100%)', pointerEvents:'none' }}/>
+        <div style={{ maxWidth:'820px', margin:'0 auto', position:'relative' }}>
+          <button onClick={onBack} style={{ background:'transparent', border:'none', color:'rgba(255,255,255,0.7)', fontSize:'13px', cursor:'pointer', marginBottom:'24px', display:'inline-flex', alignItems:'center', gap:'6px', padding:0, fontFamily:'DM Sans, sans-serif' }}>
+            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            All posts
+          </button>
+          <div style={{ marginBottom:'20px' }}><CategoryPill label={post.category}/></div>
+          <h1 style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'clamp(36px,5vw,64px)', color:'white', textTransform:'uppercase', lineHeight:0.95, marginBottom:'20px' }}>{post.title}</h1>
+          <div style={{ display:'flex', alignItems:'center', gap:'14px', color:'rgba(255,255,255,0.55)', fontSize:'14px' }}>
+            <span style={{ color:'white', fontWeight:600 }}>{post.author}</span>
+            <span>·</span><span>{post.date}</span>
+            <span>·</span><span>{post.readTime}</span>
+          </div>
+        </div>
+      </section>
+
+      <section style={{ background:'var(--cream)', padding:'72px 40px 80px' }}>
+        <div style={{ maxWidth:'820px', margin:'0 auto', display:'grid', gridTemplateColumns:'1fr 240px', gap:'48px', alignItems:'start' }}>
+          <article style={{ fontSize:'17px', lineHeight:1.85, color:'var(--text-body)' }}>
+            <p style={{ fontSize:'19px', fontWeight:500, color:'var(--text-body)', marginBottom:'24px', lineHeight:1.6 }}>{post.excerpt}</p>
+            <p style={{ marginBottom:'20px' }}>
+              Sample article body. In the real production version this would be filled with the actual content of <strong>{post.title}</strong> — written by the KBD shop team, edited for accuracy, illustrated with real photography from the Fullerton facility.
+            </p>
+            <h2 style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'30px', textTransform:'uppercase', color:'var(--black)', lineHeight:1, marginTop:'40px', marginBottom:'16px' }}>The Setup</h2>
+            <p style={{ marginBottom:'20px' }}>
+              Body copy continues here. Headlines use Barlow Condensed at 30px, body uses DM Sans at 17px with 1.85 line-height. Pull quotes and inline links keep the editorial-but-direct tone we use across the rest of the site.
+            </p>
+            <blockquote style={{ borderLeft:'3px solid var(--red)', paddingLeft:'24px', margin:'32px 0', fontFamily:'Barlow Condensed, sans-serif', fontWeight:700, fontSize:'24px', lineHeight:1.3, color:'var(--black)', fontStyle:'italic' }}>
+              "Builder-to-builder, not marketing-to-customer. That's the voice we hold across every post on this blog."
+            </blockquote>
+            <h2 style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'30px', textTransform:'uppercase', color:'var(--black)', lineHeight:1, marginTop:'40px', marginBottom:'16px' }}>The Steps</h2>
+            <ol style={{ paddingLeft:'24px', marginBottom:'20px' }}>
+              <li style={{ marginBottom:'10px' }}>Wipe down with wax-and-grease remover. Don't skip this.</li>
+              <li style={{ marginBottom:'10px' }}>Scuff with 220-grit until the entire surface is dulled — no shiny spots.</li>
+              <li style={{ marginBottom:'10px' }}>Apply self-etching primer in light, even coats.</li>
+              <li style={{ marginBottom:'10px' }}>Let cure overnight before color coat.</li>
+              <li>Color coat in 3 light passes. Clearcoat per your booth's spec.</li>
+            </ol>
+            <p style={{ marginBottom:'20px' }}>
+              That's the short version. Real production blog post would include photo callouts at each step, a parts/tools list, and a comments section moderated by the KBD team.
+            </p>
+          </article>
+
+          <aside>
+            <div style={{ background:'white', border:'1px solid var(--mid-grey)', borderRadius:'12px', padding:'20px', position:'sticky', top:'84px' }}>
+              <div style={{ fontSize:'11px', letterSpacing:'0.15em', textTransform:'uppercase', color:'var(--red)', fontWeight:700, marginBottom:'10px' }}>Related Products</div>
+              <p style={{ fontSize:'12px', color:'var(--text-muted)', lineHeight:1.6, marginBottom:'14px' }}>Kits referenced in this post:</p>
+              {[{name:'VTX Front Bumper', price:319, vehicle:'350Z Z33'},{name:'Zenki Full Body Kit', price:699, vehicle:'240SX S14'}].map(p => (
+                <div key={p.name} style={{ padding:'10px 0', borderBottom:'1px solid var(--mid-grey)' }}>
+                  <div style={{ fontSize:'13px', fontWeight:700, color:'var(--black)', marginBottom:'2px' }}>{p.name}</div>
+                  <div style={{ fontSize:'11px', color:'var(--text-muted)', marginBottom:'4px' }}>{p.vehicle}</div>
+                  <div style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:800, fontSize:'18px', color:'var(--red)' }}>${p.price}</div>
+                </div>
+              ))}
+              <a href="KBD_Results.html" style={{ display:'block', marginTop:'14px', background:'var(--red)', color:'white', padding:'10px', borderRadius:'8px', textDecoration:'none', fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'13px', textTransform:'uppercase', letterSpacing:'0.06em', textAlign:'center' }}>Shop Kits</a>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section style={{ background:'white', padding:'56px 40px 80px', borderTop:'1px solid var(--mid-grey)' }}>
+        <div style={{ maxWidth:'1200px', margin:'0 auto' }}>
+          <div style={{ marginBottom:'24px' }}>
+            <span style={{ width:'14px', height:'4px', background:'var(--red)', display:'inline-block', marginRight:'12px', verticalAlign:'middle' }}/>
+            <span style={{ color:'var(--red)', fontSize:'11px', letterSpacing:'0.22em', textTransform:'uppercase', fontWeight:700 }}>Keep Reading</span>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:'24px' }}>
+            {related.map(p => (
+              <article key={p.id} onClick={()=>{ window.scrollTo({top:0,behavior:'smooth'}); setTimeout(()=>onBack(p),100); }} style={{ background:'var(--cream)', borderRadius:'12px', overflow:'hidden', cursor:'pointer', display:'grid', gridTemplateColumns:'200px 1fr', alignItems:'stretch' }}>
+                <div style={{ aspectRatio:'4/3' }}><PostThumb post={p} height="100%"/></div>
+                <div style={{ padding:'20px 24px', display:'flex', flexDirection:'column', justifyContent:'center' }}>
+                  <div style={{ marginBottom:'8px' }}><CategoryPill label={p.category}/></div>
+                  <h3 style={{ fontFamily:'Barlow Condensed, sans-serif', fontWeight:900, fontSize:'20px', textTransform:'uppercase', color:'var(--black)', lineHeight:1.1, marginBottom:'6px' }}>{p.title}</h3>
+                  <div style={{ fontSize:'12px', color:'var(--text-muted)' }}>{p.date} · {p.readTime}</div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function BlogApp() {
+  const [openPost, setOpenPost] = useState(null);
+  function handleOpen(p) { setOpenPost(p); window.scrollTo({top:0,behavior:'smooth'}); }
+  function handleBack(maybeP) {
+    if (maybeP && maybeP.id) setOpenPost(maybeP);
+    else setOpenPost(null);
+  }
+  return (
+    <div>
+      <Nav active="Blog"/>
+      {openPost ? <BlogPost post={openPost} onBack={handleBack}/> : <BlogIndex onOpen={handleOpen}/>}
+      <Footer/>
+    </div>
+  );
+}
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{"accentColor":"#CC0000"}/*EDITMODE-END*/;
+
+function App() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--red', tweaks.accentColor);
+  }, [tweaks.accentColor]);
+  return (
+    <div>
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="Brand"><TweakColor label="Accent" value={tweaks.accentColor} onChange={v=>setTweak('accentColor',v)}/></TweakSection>
+      </TweaksPanel>
+      <BlogApp/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
