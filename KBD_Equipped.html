@@ -35,6 +35,8 @@
     [style*="grid-template-columns: 1fr 1fr"], [style*="grid-template-columns:1fr 1fr"] {
       grid-template-columns: 1fr !important;
     }
+    /* Release fixed row height so cards size naturally on mobile */
+    [style*="gridAutoRows: 220px"] { grid-auto-rows: auto !important; }
     /* Drop the sticky sidebar position on small screens */
     [style*="position: sticky"], [style*="position:sticky"] {
       position: static !important;
