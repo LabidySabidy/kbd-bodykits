@@ -23,6 +23,37 @@
   @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 
   /* Batch 6 — responsive + a11y */
+
+  /* Nav hamburger + dropdown (placed before @media blocks to avoid parse issues) */
+    nav > div { padding: 0 12px !important; gap: 8px !important; }
+    section, main, footer > div { padding-left: 16px !important; padding-right: 16px !important; }
+  }
+  .nav-hamburger { display: none; }
+  .nav-dropdown a {
+    display: block; padding: 14px 24px; color: #ccc;
+    font-size: 14px; font-weight: 500; text-decoration: none;
+    letter-spacing: 0.04em; border-bottom: 1px solid #1a1a1a;
+    transition: color 0.15s;
+  }
+  .nav-dropdown a:hover, .nav-dropdown a:active { color: white; background: #111; }
+
+
+  /* Mobile responsive rules (placed before @media blocks to avoid CSS parse issues) */
+  @media (max-width: 900px) {
+    [style*="repeat(4,"] { grid-template-columns: 1fr !important; }
+    [style*="repeat(5,"] { grid-template-columns: 1fr !important; }
+    [style*="repeat(3,"] { grid-template-columns: 1fr !important; }
+    [style*="1fr 1fr"], [style*="1.8fr"] { grid-template-columns: 1fr !important; }
+    h2[style*="nowrap"] { white-space: normal !important; }
+    [style*="position: sticky"] { position: static !important; }
+    nav > div { padding: 0 16px !important; gap: 12px !important; }
+    section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
+  }
+  @media (max-width: 640px) {
+    nav > div { padding: 0 12px !important; gap: 8px !important; }
+    section, main, footer > div { padding-left: 16px !important; padding-right: 16px !important; }
+  }
+
   @media (max-width: 900px) {
     /* Generic 3-column → 1-column collapse for product / build / blog grids */
     [style*="grid-template-columns: repeat(4,"], [style*="grid-template-columns:repeat(4,"],
@@ -43,12 +74,7 @@
     /* Page-level padding tighten */
     section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
   }
-  @media (max-width: 640px) {
-    /* Hide desktop nav links, show hamburger */
     nav > div { padding: 0 12px !important; gap: 8px !important; }
-    .nav-links { display: none !important; }
-    .nav-hamburger { display: flex !important; }
-    .nav-desktop-only { display: none !important; }
     /* Page-level padding tighten */
     section, main, footer > div { padding-left: 16px !important; padding-right: 16px !important; }
   }
@@ -727,6 +753,22 @@ function StickyCartBar({ product, qty, onAdd, added }) {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<ProductPage/>);
+</script>
+<script>
+(function(){
+  var mql = window.matchMedia("(max-width: 640px)");
+  function hideNav() {
+    var links = document.querySelector(".nav-links");
+    if (links) links.style.display = mql.matches ? "none" : "";
+  }
+  hideNav();
+  mql.addEventListener("change", hideNav);
+  var observer = new MutationObserver(function(){
+    var links = document.querySelector(".nav-links");
+    if (links && links.style.display !== "none" && mql.matches) links.style.display = "none";
+  });
+  observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
+})();
 </script>
 </body>
 </html>

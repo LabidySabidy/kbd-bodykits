@@ -30,6 +30,23 @@
   input:focus, select:focus { border-color: var(--black) !important; box-shadow: 0 0 0 3px rgba(12,12,12,0.08); }
 
   /* Batch 6 — responsive + a11y */
+
+  /* Mobile responsive rules (placed before @media blocks to avoid CSS parse issues) */
+  @media (max-width: 900px) {
+    [style*="repeat(4,"] { grid-template-columns: 1fr !important; }
+    [style*="repeat(5,"] { grid-template-columns: 1fr !important; }
+    [style*="repeat(3,"] { grid-template-columns: 1fr !important; }
+    [style*="1fr 1fr"], [style*="1.8fr"] { grid-template-columns: 1fr !important; }
+    h2[style*="nowrap"] { white-space: normal !important; }
+    [style*="position: sticky"] { position: static !important; }
+    nav > div { padding: 0 16px !important; gap: 12px !important; }
+    section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
+  }
+  @media (max-width: 640px) {
+    nav > div { padding: 0 12px !important; gap: 8px !important; }
+    section, main, footer > div { padding-left: 16px !important; padding-right: 16px !important; }
+  }
+
   @media (max-width: 900px) {
     /* Generic 3-column → 1-column collapse for product / build / blog grids */
     [style*="grid-template-columns: repeat(4,"], [style*="grid-template-columns:repeat(4,"],
