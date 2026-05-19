@@ -25,9 +25,9 @@
   /* Batch 6 — responsive + a11y */
   @media (max-width: 900px) {
     /* Generic 3-column → 1-column collapse for product / build / blog grids */
-    [style*="grid-template-columns: repeat(3,"], [style*="grid-template-columns:repeat(3,"],
     [style*="grid-template-columns: repeat(4,"], [style*="grid-template-columns:repeat(4,"],
-    [style*="gridTemplateColumns: repeat(3"], [style*="gridTemplateColumns:repeat(3"] {
+    [style*="grid-template-columns: repeat(4,"], [style*="grid-template-columns:repeat(4,"],
+    [style*="gridTemplateColumns: repeat(4", [style*="gridTemplateColumns:repeat(4"], [style*="gridTemplateColumns: repeat(3"], [style*="gridTemplateColumns:repeat(4"], [style*="gridTemplateColumns:repeat(4"], [style*="gridTemplateColumns:repeat(4"], [style*="gridTemplateColumns:repeat(3"] {
       grid-template-columns: 1fr !important;
     }
     /* Two-column layouts collapse to one */
@@ -47,7 +47,7 @@
     /* Drop nav items beyond logo + cart */
     nav [data-nav-link] { display: none !important; }
     /* Bigger tap targets */
-    button, a { min-height: 32px; }
+    
   }
 
   /* 6.4 Focus-visible — visible keyboard focus, not on click */

@@ -38,10 +38,11 @@
 
   /* Batch 6 — responsive + a11y */
   @media (max-width: 900px) {
-    /* Generic 3-column → 1-column collapse for product / build / blog grids */
+    /* Generic multi-column grids collapse to 1 column */
     [style*="grid-template-columns: repeat(3,"], [style*="grid-template-columns:repeat(3,"],
     [style*="grid-template-columns: repeat(4,"], [style*="grid-template-columns:repeat(4,"],
-    [style*="gridTemplateColumns: repeat(3"], [style*="gridTemplateColumns:repeat(3"] {
+    [style*="gridTemplateColumns: repeat(3"], [style*="gridTemplateColumns:repeat(3"],
+    [style*="gridTemplateColumns: repeat(4"], [style*="gridTemplateColumns:repeat(4"] {
       grid-template-columns: 1fr !important;
     }
     /* Two-column layouts collapse to one */
@@ -56,13 +57,12 @@
     nav > div { padding: 0 16px !important; gap: 12px !important; }
     /* Page-level padding tighten */
     section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
-    .hero-video { display: none !important; }
   }
   @media (max-width: 640px) {
     /* Drop nav items beyond logo + cart */
     nav [data-nav-link] { display: none !important; }
     /* Bigger tap targets */
-    button, a { min-height: 32px; }
+    
   }
 
   /* 6.4 Focus-visible — visible keyboard focus, not on click */
