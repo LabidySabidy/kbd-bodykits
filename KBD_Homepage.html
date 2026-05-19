@@ -362,7 +362,7 @@ function Hero({ tweaks }) {
 
   useEffect(() => {
     const vid = videoRef.current;
-    if (!vid || window.innerWidth < 768) return;
+    if (!vid) return;
     const onCanPlay = () => { setVideoReady(true); vid.play().catch(() => {}); };
     vid.addEventListener('canplay', onCanPlay);
     vid.load();
