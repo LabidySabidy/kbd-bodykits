@@ -51,10 +51,13 @@
     section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
   }
   @media (max-width: 640px) {
-    /* Drop nav items beyond logo + cart */
-    nav [data-nav-link] { display: none !important; }
-    /* Bigger tap targets */
-    
+    /* Hide desktop nav links, show hamburger */
+    nav > div { padding: 0 12px !important; gap: 8px !important; }
+    .nav-links { display: none !important; }
+    .nav-hamburger { display: flex !important; }
+    .nav-desktop-only { display: none !important; }
+    /* Page-level padding tighten */
+    section, main, footer > div { padding-left: 16px !important; padding-right: 16px !important; }
   }
 
   /* 6.4 Focus-visible — visible keyboard focus, not on click */
