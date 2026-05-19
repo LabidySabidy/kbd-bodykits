@@ -38,17 +38,27 @@
 
   /* Batch 6 — responsive + a11y */
   @media (max-width: 900px) {
-    /* Generic multi-column grids collapse to 1 column */
+    /* Generic multi-column grids (3+) collapse to 1 column */
     [style*="grid-template-columns: repeat(3,"], [style*="grid-template-columns:repeat(3,"],
     [style*="grid-template-columns: repeat(4,"], [style*="grid-template-columns:repeat(4,"],
+    [style*="grid-template-columns: repeat(5,"], [style*="grid-template-columns:repeat(5,"],
     [style*="gridTemplateColumns: repeat(3"], [style*="gridTemplateColumns:repeat(3"],
-    [style*="gridTemplateColumns: repeat(4"], [style*="gridTemplateColumns:repeat(4"] {
+    [style*="gridTemplateColumns: repeat(4"], [style*="gridTemplateColumns:repeat(4"],
+    [style*="gridTemplateColumns: repeat(5"], [style*="gridTemplateColumns:repeat(5"] {
       grid-template-columns: 1fr !important;
     }
-    /* Two-column layouts collapse to one */
-    [style*="grid-template-columns: 1fr 1fr"], [style*="grid-template-columns:1fr 1fr"] {
+    /* Any multi-fraction explicit grid — collapse */
+    [style*="1.8fr 1fr 1fr 1fr"] {
       grid-template-columns: 1fr !important;
     }
+    /* Two-column layouts (1fr 1fr, 1fr 1.2fr, 1fr 1.5fr, etc.) collapse */
+    [style*="grid-template-columns: 1fr 1"], [style*="grid-template-columns:1fr 1"],
+    [style*="gridTemplateColumns: 1fr 1"], [style*="gridTemplateColumns:1fr 1"] {
+      grid-template-columns: 1fr !important;
+    }
+    /* Banner nowrap headings — allow wrapping */
+    h2[style*="nowrap"] { white-space: normal !important; }
+    h2[style*="nowrap"] + a, h2[style*="nowrap"] ~ a { flex-shrink: 0; }
     /* Drop the sticky sidebar position on small screens */
     [style*="position: sticky"], [style*="position:sticky"] {
       position: static !important;
@@ -906,8 +916,8 @@ function ShowUsYourRideBanner() {
       padding: '56px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden'
     }}>
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.18)', pointerEvents: 'none' }} />
-      <div style={{ position: 'relative', maxWidth: '1440px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '32px' }}>
-        <h2 style={{ fontFamily: 'Barlow Condensed, sans-serif', fontWeight: 900, fontSize: 'clamp(32px,3.5vw,52px)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: 1, whiteSpace: 'nowrap' }}>
+      <div style={{ position: 'relative', maxWidth: '1440px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+        <h2 style={{ fontFamily: 'Barlow Condensed, sans-serif', fontWeight: 900, fontSize: 'clamp(28px,3.5vw,52px)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: 1.1, whiteSpace: 'nowrap' }}>
           Show Us Your Ride — Tag <span style={{ opacity: 0.85 }}>@kbdbodykits</span> or <span style={{ background: 'rgba(255,255,255,0.18)', borderRadius: '5px', padding: '2px 10px' }}>#KBDBodyKits</span>
         </h2>
         <a href="https://instagram.com/kbdbodykits" target="_blank" rel="noopener" style={{
@@ -1300,8 +1310,8 @@ function WillMakeItBanner() {
       textAlign: 'center', position: 'relative', overflow: 'hidden'
     }}>
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)', backgroundSize: '40px 40px', pointerEvents: 'none' }} />
-      <div style={{ position: 'relative', maxWidth: '1440px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '32px' }}>
-        <h2 style={{ fontFamily: 'Barlow Condensed, sans-serif', fontWeight: 900, fontSize: 'clamp(32px,3.5vw,52px)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: 1, whiteSpace: 'nowrap' }}>
+      <div style={{ position: 'relative', maxWidth: '1440px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+        <h2 style={{ fontFamily: 'Barlow Condensed, sans-serif', fontWeight: 900, fontSize: 'clamp(28px,3.5vw,52px)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.02em', lineHeight: 1.1, whiteSpace: 'nowrap' }}>
           Don't See Your Vehicle? — KBD Will <span style={{ fontStyle: 'italic' }}>Make It.</span>
         </h2>
         <a href="KBD_Will_Make_It.html" style={{
