@@ -342,21 +342,11 @@ function Nav({ tweaks }) {
               <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
             </svg>
           </button>
-          {/* Track Order — hidden on mobile */}
-          <a className="nav-desktop-only" href="KBD_Order_Status.html" style={{ color: '#aaa', fontSize: '13px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          {/* Track Order */}
+          <a href="KBD_Order_Status.html" style={{ color: '#aaa', fontSize: '13px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
             <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
             Track Order
           </a>
-          {/* Hamburger — mobile only */}
-          <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)} style={{
-            background: 'transparent', border: '1px solid #333', borderRadius: '6px',
-            color: '#aaa', padding: '8px 10px', cursor: 'pointer',
-            flexDirection: 'column', gap: '4px', alignItems: 'center', justifyContent: 'center'
-          }} aria-label="Menu">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
           {/* Cart */}
           <button style={{
             background: 'var(--red)', border: 'none', cursor: 'pointer',
@@ -370,6 +360,16 @@ function Nav({ tweaks }) {
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
             Cart ({cartCount})
+          </button>
+          {/* Hamburger — mobile only, far right for thumb access */}
+          <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)} style={{
+            background: 'transparent', border: '1px solid #333', borderRadius: '6px',
+            color: '#aaa', padding: '8px 10px', cursor: 'pointer',
+            flexDirection: 'column', gap: '4px', alignItems: 'center', justifyContent: 'center'
+          }} aria-label="Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
           </button>
         </div>
       </div>
