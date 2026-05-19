@@ -786,5 +786,23 @@ ReactDOM.createRoot(document.getElementById('root')).render(<ProductPage/>);
   observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
 })();
 </script>
+<script>
+(function(){
+  var mql = window.matchMedia("(max-width: 640px)");
+  function applyMobileNav() {
+    var isMobile = mql.matches;
+    var links = document.querySelector(".nav-links");
+    if (links) links.style.display = isMobile ? "none" : "";
+    var hamburger = document.querySelector(".nav-hamburger");
+    if (hamburger) hamburger.style.display = isMobile ? "flex" : "none";
+    document.querySelectorAll(".nav-desktop-only").forEach(function(el) {
+      el.style.display = isMobile ? "none" : "";
+    });
+  }
+  applyMobileNav();
+  mql.addEventListener("change", applyMobileNav);
+  new MutationObserver(applyMobileNav).observe(document.body || document.documentElement, { childList: true, subtree: true });
+})();
+</script>
 </body>
 </html>
