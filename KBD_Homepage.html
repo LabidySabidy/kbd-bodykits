@@ -67,18 +67,23 @@
     nav > div { padding: 0 16px !important; gap: 12px !important; }
     /* Page-level padding tighten */
     section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
-  /* TrustBar — horizontal scroll on mobile, grid on desktop */
+  /* TrustBar — auto-scrolling marquee on mobile, grid on desktop */
   @media (max-width: 900px) {
     [data-trust-bar] {
       display: flex !important;
       flex-wrap: nowrap !important;
-      overflow-x: auto !important;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden !important;
       grid-template-columns: none !important;
+      padding: 0 !important;
     }
     [data-trust-bar] > div {
       min-width: 180px;
       flex-shrink: 0;
+      animation: trust-scroll 15s linear infinite;
+    }
+    @keyframes trust-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(calc(-180px * 5)); }
     }
   }
   }
@@ -620,7 +625,7 @@ function TrustBar() {
         display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)',
         padding: '0 40px'
       }}>
-        {items.map((item, i) =>
+        {[...items, ...items].map((item, i) =>
         <div key={i} style={{
           padding: '22px 20px', display: 'flex', alignItems: 'center', gap: '14px',
           borderRight: i < 4 ? '1px solid #1e1e1e' : 'none'

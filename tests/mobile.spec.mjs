@@ -133,7 +133,7 @@ test.describe('Homepage — trust bar', () => {
     });
   });
 
-  test('trust bar present and scrollable on mobile', async ({ page: p }) => {
+  test('trust bar auto-scrolls on mobile', async ({ page: p }) => {
     await p.setViewportSize(VIEWPORT);
     await p.goto(`file://${PROJECT}/KBD_Homepage.html`, { waitUntil: 'networkidle' });
     await p.waitForTimeout(1500);
@@ -141,9 +141,9 @@ test.describe('Homepage — trust bar', () => {
     const trustBar = p.locator('[data-trust-bar]');
     await expect(trustBar).toBeVisible();
 
-    const display = await trustBar.evaluate((el) => getComputedStyle(el).display);
-    expect(display).toBe('flex');
-    const overflowX = await trustBar.evaluate((el) => getComputedStyle(el).overflowX);
-    expect(['auto', 'scroll']).toContain(overflowX);
+    // Check animation is applied on first child
+    const firstItem = trustBar.locator('> div').first();
+    const animation = await firstItem.evaluate((el) => getComputedStyle(el).animationName);
+    expect(animation).toContain('trust-scroll');
   });
 });
