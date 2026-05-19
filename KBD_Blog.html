@@ -21,6 +21,24 @@
   /* Batch 6 — responsive + a11y */
 
   /* Mobile responsive rules (placed before @media blocks to avoid CSS parse issues) */
+
+  /* Nav hamburger + dropdown */
+  @media (max-width: 640px) {
+    nav > div { padding: 0 12px !important; gap: 8px !important; }
+    .nav-links { display: none !important; }
+    .nav-hamburger { display: flex !important; }
+    .nav-desktop-only { display: none !important; }
+    section, main, footer > div { padding-left: 16px !important; padding-right: 16px !important; }
+  }
+  .nav-hamburger { display: none; }
+  .nav-dropdown a {
+    display: block; padding: 14px 24px; color: #ccc;
+    font-size: 14px; font-weight: 500; text-decoration: none;
+    letter-spacing: 0.04em; border-bottom: 1px solid #1a1a1a;
+    transition: color 0.15s;
+  }
+  .nav-dropdown a:hover, .nav-dropdown a:active { color: white; background: #111; }
+
   @media (max-width: 900px) {
     [style*="repeat(4,"] { grid-template-columns: 1fr !important; }
     [style*="repeat(5,"] { grid-template-columns: 1fr !important; }
@@ -35,6 +53,24 @@
     nav > div { padding: 0 12px !important; gap: 8px !important; }
     section, main, footer > div { padding-left: 16px !important; padding-right: 16px !important; }
   }
+
+
+  /* Nav hamburger + dropdown */
+  @media (max-width: 640px) {
+    nav > div { padding: 0 12px !important; gap: 8px !important; }
+    .nav-links { display: none !important; }
+    .nav-hamburger { display: flex !important; }
+    .nav-desktop-only { display: none !important; }
+    section, main, footer > div { padding-left: 16px !important; padding-right: 16px !important; }
+  }
+  .nav-hamburger { display: none; }
+  .nav-dropdown a {
+    display: block; padding: 14px 24px; color: #ccc;
+    font-size: 14px; font-weight: 500; text-decoration: none;
+    letter-spacing: 0.04em; border-bottom: 1px solid #1a1a1a;
+    transition: color 0.15s;
+  }
+  .nav-dropdown a:hover, .nav-dropdown a:active { color: white; background: #111; }
 
   @media (max-width: 900px) {
     /* Generic 3-column → 1-column collapse for product / build / blog grids */
@@ -344,6 +380,26 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+(function(){
+  var mql = window.matchMedia("(max-width: 640px)");
+  function hideNav() {
+    var links = document.querySelector(".nav-links");
+    if (links) links.style.display = mql.matches ? "none" : "";
+    var hamburger = document.querySelector(".nav-hamburger");
+    if (hamburger) hamburger.style.display = mql.matches ? "flex" : "none";
+  }
+  hideNav();
+  mql.addEventListener("change", hideNav);
+  var observer = new MutationObserver(function(){
+    var links = document.querySelector(".nav-links");
+    if (links && links.style.display !== "none" && mql.matches) links.style.display = "none";
+    var hamburger = document.querySelector(".nav-hamburger");
+    if (hamburger && hamburger.style.display !== "flex" && mql.matches) hamburger.style.display = "flex";
+  });
+  observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
+})();
 </script>
 </body>
 </html>

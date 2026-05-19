@@ -42,6 +42,13 @@
 
 
   /* Mobile responsive rules (placed before @media blocks to avoid CSS parse issues) */
+
+  /* Prevent horizontal overflow on mobile */
+  @media (max-width: 900px) {
+    body, html { overflow-x: hidden; max-width: 100vw; }
+    img, svg, video, canvas { max-width: 100%; height: auto; }
+  }
+
   @media (max-width: 900px) {
     [style*="repeat(4,"] { grid-template-columns: 1fr !important; }
     [style*="repeat(5,"] { grid-template-columns: 1fr !important; }
@@ -53,8 +60,17 @@
     section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
   }
   @media (max-width: 640px) {
+    nav { overflow-x: hidden; }
+    nav > div { flex-wrap: nowrap; }
     nav > div { padding: 0 12px !important; gap: 8px !important; }
     section, main, footer > div { padding-left: 16px !important; padding-right: 16px !important; }
+  }
+
+
+  /* Prevent horizontal overflow on mobile */
+  @media (max-width: 900px) {
+    body, html { overflow-x: hidden; max-width: 100vw; }
+    img, svg, video, canvas { max-width: 100%; height: auto; }
   }
 
   @media (max-width: 900px) {
