@@ -67,9 +67,12 @@
     nav > div { padding: 0 16px !important; gap: 12px !important; }
     /* Page-level padding tighten */
     section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
-    /* TrustBar — horizontal scroll instead of stacking */
-    [data-trust-bar] { display: flex !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; grid-template-columns: none !important; }
-    [data-trust-bar] > div { min-width: 175px; flex-shrink: 0; }
+    /* TrustBar — auto-scrolling marquee */
+    [data-trust-bar] { animation: trust-scroll 30s linear infinite; }
+    @keyframes trust-scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
   }
   @media (max-width: 640px) {
     /* Compact nav — horizontal scroll */
@@ -387,7 +390,7 @@ function Hero({ tweaks }) {
 
   return (
     <section style={{
-      position: 'relative', minHeight: '48vh', background: '#080808', backgroundImage: `url('${KBD_BASE}/banner2.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center',
+      position: 'relative', minHeight: '48vh', background: '#080808',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       overflow: 'hidden'
     }}>
@@ -571,18 +574,17 @@ function TrustBar() {
   ];
 
   return (
-    <div style={{ background: 'var(--black)', borderBottom: '1px solid #1e1e1e' }}>
+    <div style={{ background: 'var(--black)', borderBottom: '1px solid #1e1e1e', overflow: 'hidden' }}>
       <div data-trust-bar style={{
-        maxWidth: '1440px', margin: '0 auto',
-        display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)',
+        display: 'flex', flexWrap: 'nowrap',
         padding: '0 40px'
       }}>
-        {items.map((item, i) =>
+        {[...items, ...items].map((item, i) =>
         <div key={i} style={{
           padding: '22px 20px', display: 'flex', alignItems: 'center', gap: '14px',
-          borderRight: i < 4 ? '1px solid #1e1e1e' : 'none'
+          borderRight: '1px solid #1e1e1e', minWidth: '200px', flexShrink: 0
         }}>
-            <span style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:'30px', height:'30px', flexShrink:0 }} aria-hidden="true">{item.icon}</span>
+            <span style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:'30px', height:'30px', flexShink:0 }} aria-hidden="true">{item.icon}</span>
             <div>
               <div style={{ color: 'white', fontWeight: 600, fontSize: '13px', letterSpacing: '0.02em' }}>{item.label}</div>
               <div style={{ color: '#666', fontSize: '11px', marginTop: '2px' }}>{item.sub}</div>
@@ -955,7 +957,7 @@ function BuildGallery() {
           <a href="KBD_Equipped.html" style={{
             color: 'var(--text-muted)', fontSize: '13px', textDecoration: 'none',
             borderBottom: '1px solid currentColor', paddingBottom: '2px', fontWeight: 500
-          }}>Submit your build →</a>
+          }} style={{ whiteSpace: 'nowrap' }}>Submit your build →</a>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
