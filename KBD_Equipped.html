@@ -56,6 +56,17 @@
     section, main, footer > div { padding-left: 16px !important; padding-right: 16px !important; }
   }
 
+  /* Hamburger — hidden by default, shown on mobile */
+  .nav-hamburger { display: none; }
+  /* Dropdown panel */
+  .nav-dropdown a {
+    display: block; padding: 14px 24px; color: #ccc;
+    font-size: 14px; font-weight: 500; text-decoration: none;
+    letter-spacing: 0.04em; border-bottom: 1px solid #1a1a1a;
+    transition: color 0.15s;
+  }
+  .nav-dropdown a:hover, .nav-dropdown a:active { color: white; background: #111; }
+
   /* 6.4 Focus-visible — visible keyboard focus, not on click */
   *:focus { outline: none; }
   a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
@@ -210,13 +221,24 @@ function Nav() {
         }}>
           + Submit Your Build
         </a>
-<button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)} style={{ background:'transparent', border:'1px solid #333', borderRadius:'6px', color:'#aaa', padding:'8px 10px', cursor:'pointer', flexDirection:'column', gap:'4px', alignItems:'center', justifyContent:'center' }} aria-label="Menu">          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">            <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />          </svg>        </button>
+        <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)} style={{ background:'transparent', border:'1px solid #333', borderRadius:'6px', color:'#aaa', padding:'8px 10px', cursor:'pointer', flexDirection:'column', gap:'4px', alignItems:'center', justifyContent:'center' }} aria-label="Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
         <button onClick={()=>window.location.href='KBD_Checkout.html'} style={{ background:'var(--red)', border:'none', cursor:'pointer', color:'white', padding:'8px 18px', borderRadius:'6px', fontWeight:600, fontSize:'13px', display:'flex', alignItems:'center', gap:'6px', fontFamily:'DM Sans, sans-serif' }}>
           <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           Cart ({cartCount})
         </button>
       </div>
-{menuOpen && (        <div className="nav-dropdown" style={{ display:'block', position:'absolute', top:'64px', left:0, right:0, background:'var(--black)', borderBottom:'2px solid var(--red)', zIndex:999, padding:'8px 0' }}>          {[['KBD_Homepage.html','Shop By Vehicle'],['KBD_Results.html','Body Kits'],['KBD_Equipped.html','KBD Equipped'],['KBD_Will_Make_It.html','Will Make It'],['KBD_About.html','About'],['KBD_Blog.html','Blog']].map(([href, item]) =>          <a key={item} href={href} onClick={() => setMenuOpen(false)}>            {item}          </a>          ))}        </div>      )}
+
+      {menuOpen && (
+        <div className="nav-dropdown" style={{ display:'block', position:'absolute', top:'64px', left:0, right:0, background:'var(--black)', borderBottom:'2px solid var(--red)', zIndex:999, padding:'8px 0' }}>
+          {[['KBD_Homepage.html','Shop By Vehicle'],['KBD_Results.html','Body Kits'],['KBD_Equipped.html','KBD Equipped'],['KBD_Will_Make_It.html','Will Make It'],['KBD_About.html','About'],['KBD_Blog.html','Blog']].map(([href, item]) => (
+            <a key={item} href={href} onClick={() => setMenuOpen(false)}>{item}</a>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }
