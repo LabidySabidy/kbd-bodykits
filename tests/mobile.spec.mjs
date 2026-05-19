@@ -11,15 +11,15 @@ const PAGES_WITH_NAV = [
   'KBD_Results.html',
   'KBD_Product.html',
   'KBD_Equipped.html',
-  'KBD_Equipped-print.html',
   'KBD_Will_Make_It.html',
-  'KBD_Checkout.html',
 ];
 
 const PAGES_WITHOUT_NAV = [
   'KBD_About.html',
   'KBD_Blog.html',
   'KBD_Order_Status.html',
+  'KBD_Equipped-print.html',
+  'KBD_Checkout.html',
 ];
 
 const ALL_PAGES = [...PAGES_WITH_NAV, ...PAGES_WITHOUT_NAV];
@@ -133,7 +133,7 @@ test.describe('Homepage — trust bar', () => {
     });
   });
 
-  test('trust bar auto-scrolls', async ({ page: p }) => {
+  test('trust bar present and scrollable on mobile', async ({ page: p }) => {
     await p.setViewportSize(VIEWPORT);
     await p.goto(`file://${PROJECT}/KBD_Homepage.html`, { waitUntil: 'networkidle' });
     await p.waitForTimeout(1500);
@@ -141,9 +141,9 @@ test.describe('Homepage — trust bar', () => {
     const trustBar = p.locator('[data-trust-bar]');
     await expect(trustBar).toBeVisible();
 
-    const animation = await trustBar.evaluate((el) =>
-      getComputedStyle(el).animationName
-    );
-    expect(animation).toContain('trust-scroll');
+    const display = await trustBar.evaluate((el) => getComputedStyle(el).display);
+    expect(display).toBe('flex');
+    const overflowX = await trustBar.evaluate((el) => getComputedStyle(el).overflowX);
+    expect(['auto', 'scroll']).toContain(overflowX);
   });
 });

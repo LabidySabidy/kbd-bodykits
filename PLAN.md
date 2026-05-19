@@ -1,66 +1,56 @@
-# Plan — Prototype Stabilization (v1.2 → Pitch-Ready)
+# PLAN — Mobile Cross-Page Fixes
 
-## Goal
-Get the prototype pitch-ready by closing all Priority 1–3 defects from PRD §9 and verifying against the §10 definition of done.
+**Goal:** Every page renders correctly on mobile (375px+), navigation works via hamburger, and Results page filters move to top.
 
 ## Approach
-Work priority-ordered: audit and fix demo-critical bugs first (broken links, console errors, cart breakage), then mobile responsive pass, then polish (emoji→SVG, contrast, badges). Each phase produces a shippable increment — the prototype must open without errors at every checkpoint.
+Audit revealed two categories of issues: (1) stale CSS collapse rules on 9 non-homepage files, (2) page-specific layout problems. Fix CSS globally first (single pattern applied to all files), then fix per-page JSX issues. No new dependencies.
 
 ## Phases
 
-1. **Audit & baseline** — click-through every nav link across all 10 pages, verify cart persistence, sweep console for errors. Fix anything broken. Output: a confirmed-clean link graph and cart flow.
-2. **Mobile responsive pass** — test and fix layout at 375px, 414px, 768px viewports. Smushed grids, overflow, untappable tap targets. Output: all 10 pages render without horizontal overflow at 375px.
-3. **Iconography & contrast** — replace any remaining emoji or low-effort icons with inline SVGs. Strengthen hero overlay to WCAG AA. Verify all Equipped @handle links. Output: zero emoji in UI, hero headlines pass contrast check.
-4. **Footer badge & announcement bar** — add "Made in Fullerton, CA" footer badge to every page missing it. Add global rotating announcement bar to every page missing it. Output: badge + bar present on all 10 pages.
-5. **Equipped-print delay** — add 3-second delay + "Cancel print / Print Now" banner to Equipped-print page. Output: print dialog does not fire immediately on page load.
-6. **Priority 4 enhancements** (optional, time-permitting) — real review submission UX on Product page, "Past Crowd-Funded Wins" on Will Make It, Nav standardization onto kbd-shell.jsx where safe.
+### Phase 1 — Sync CSS across all 9 non-homepage files
+Apply the homepage's updated media query rules to every other page:
+- Add `repeat(5,` multi-column collapse
+- Add `1.8fr 1fr 1fr 1fr` footer collapse
+- Broaden two-column rule from `1fr 1fr` → `1fr 1` (catches `1fr 1.2fr`, etc.)
+- Add `h2[style*="nowrap"]` wrap override
 
-## Files that will change
+**Files:** KBD_About.html, KBD_Blog.html, KBD_Checkout.html, KBD_Equipped.html, KBD_Equipped-print.html, KBD_Order_Status.html, KBD_Product.html, KBD_Results.html, KBD_Will_Make_It.html
 
-| File | Change | Phase |
-|---|---|---|
-| `KBD_Homepage.html` | Hero overlay contrast, announcement bar, mobile fixes, footer badge | 2, 3, 4 |
-| `KBD_Results.html` | Mobile fixes, announcement bar, footer badge | 2, 4 |
-| `KBD_Product.html` | Mobile fixes, announcement bar, footer badge | 2, 4 |
-| `KBD_Equipped.html` | @handle link audit, mobile fixes, announcement bar, footer badge | 2, 3, 4 |
-| `KBD_Equipped-print.html` | Print delay + cancel banner, mobile fixes, announcement bar, footer badge | 2, 4, 5 |
-| `KBD_Will_Make_It.html` | Mobile fixes, announcement bar, footer badge | 2, 4 |
-| `KBD_Checkout.html` | Mobile fixes, announcement bar, footer badge | 2, 4 |
-| `KBD_About.html` | Mobile fixes, announcement bar, footer badge | 2, 4 |
-| `KBD_Blog.html` | Mobile fixes, announcement bar, footer badge | 2, 4 |
-| `KBD_Order_Status.html` | Mobile fixes, announcement bar, footer badge | 2, 4 |
-| `kbd-shell.jsx` | Possible Nav standardization (Phase 6 only) | 6 |
+### Phase 2 — Hamburger nav on all pages with Nav
+Replace current mobile behavior (hide-all-nav-links) with:
+- Hamburger icon (☰) visible at ≤640px
+- Click toggles a dropdown with all nav links
+- Cart icon stays visible alongside hamburger
 
-## Acceptance criteria
+**Files:** KBD_Checkout.html, KBD_Equipped.html, KBD_Equipped-print.html, KBD_Homepage.html, KBD_Product.html, KBD_Results.html, KBD_Will_Make_It.html
 
-- [ ] All 10 HTML files open in a browser without console errors
-- [ ] Every nav link resolves to a real page (no `href="#"` in primary nav)
-- [ ] Cart persists across pages via localStorage
-- [ ] Every form submission resolves to a visible success state
-- [ ] Page renders correctly at 375px wide (no horizontal overflow)
-- [ ] No emoji visible in UI elements
-- [ ] No `{{TOKEN}}` placeholders visible to the user
-- [ ] No fake reviewer names anywhere
-- [ ] All `@handle` references on Equipped link to Instagram
-- [ ] Limited Lifetime Warranty wording is consistent
-- [ ] "Made in Fullerton, CA" footer badge on all 10 pages
-- [ ] Global announcement bar on all 10 pages
-- [ ] Equipped-print shows delay banner before print dialog
-- [ ] Hero headline meets WCAG AA contrast on Homepage
+### Phase 3 — Remove Y/M/M labels from Homepage hero
+Delete the `<label>` elements above Year/Make/Model selects.
+
+**Files:** KBD_Homepage.html
+
+### Phase 4 — Results page mobile redesign
+Change `240px 1fr` sidebar+content grid to stack (filters → results at mobile). Options:
+- A: CSS-only — collapse grid to 1 column, sidebar moves above results
+- B: JS-driven — accordion/collapsible filter panel at top (more mobile-native)
+- Recommend A for simplicity; filters render as a scrollable strip or stacked list above product cards.
+
+**Files:** KBD_Results.html
+
+### Phase 5 — Final audit pass
+Spot-check each page at 375px viewport via Playwright for overflow, layout sanity. Log remaining issues as follow-ups.
 
 ## Not in scope
+- Tablet layout (768-1024px) — mobile-first only
+- New visual design — keeping existing aesthetic
+- Performance optimization
+- Pages without Nav (About, Blog, Order_Status) navigation — they have no Nav component to add hamburger to; separate task TBD
 
-- Production build (headless WordPress + Next.js + Stripe)
-- Admin pages, dealer portal, gift cards, FAQ system
-- Real backend / API / payment processing
-- SEO metadata beyond `<title>` tags
-- Priority 4 Nav standardization unless explicitly approved mid-phase
-- Replacing or restyling the KBD logo
-
-## Open questions
-
-- None — PRD §9 is explicit and the technical constraint set is locked.
-
-## References
-
-- `PRD.md` §9 (known issues / open work), §10 (definition of done), §8 (technical constraints)
+## Acceptance criteria
+- [ ] All 10 pages have synchronized CSS collapse rules
+- [ ] All pages with Nav show hamburger menu at ≤640px
+- [ ] Hamburger opens/closes nav links on tap
+- [ ] Homepage hero: no Year/Make/Model labels
+- [ ] Results page: filters above product grid at ≤900px
+- [ ] Playwright: 0 horizontal overflow failures across all pages at 375px
+- [ ] Playwright: 0 side-by-side grid items at 375px

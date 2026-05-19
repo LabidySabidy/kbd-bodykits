@@ -8,11 +8,10 @@
 
 
 <!-- session-in-progress:start=2026-05-19T03:51:50.703Z -->
-## 2026-05-18 22:56 — **Changed:** `test-mobile.mjs` (temp script, can delete)
-**Verified:** Playwrigh... _(in progress)_
-**Changed:** `test-mobile.mjs` (temp script, can delete)
-**Verified:** Playwright — 20/20 no-overflow + 20/20 grid-stacking across all 10 pages at 375px and 430px
-**Next:** Commit and push, or address the `useTweaks` gap
+## 2026-05-18 23:10 — Plan written _(in progress)_
+Plan written. This hits the "spans >3 files" grill trigger, but all changes are mechanical — CSS sync (copy pattern) + JSX hamburger (copy pattern) + simple removals. No new logic or dependencies.
+
+Proceed with this plan, or want me to grill any phase?
 <!-- end-session-in-progress -->
 ## 2026-05-18 22:42 — **Changed:** All 10 HTML files — CSS media query fixes  
 **Verified:** Homepage ...

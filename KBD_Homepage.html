@@ -67,12 +67,20 @@
     nav > div { padding: 0 16px !important; gap: 12px !important; }
     /* Page-level padding tighten */
     section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
-    /* TrustBar — auto-scrolling marquee */
-    [data-trust-bar] { animation: trust-scroll 8s linear infinite; }
-    @keyframes trust-scroll {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+  /* TrustBar — horizontal scroll on mobile, grid on desktop */
+  @media (max-width: 900px) {
+    [data-trust-bar] {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch;
+      grid-template-columns: none !important;
     }
+    [data-trust-bar] > div {
+      min-width: 180px;
+      flex-shrink: 0;
+    }
+  }
   }
   /* Hamburger — hidden by default, shown on mobile */
   .nav-hamburger { display: none; }
@@ -606,17 +614,18 @@ function TrustBar() {
   ];
 
   return (
-    <div style={{ background: 'var(--black)', borderBottom: '1px solid #1e1e1e', overflow: 'hidden' }}>
+    <div style={{ background: 'var(--black)', borderBottom: '1px solid #1e1e1e' }}>
       <div data-trust-bar style={{
-        display: 'flex', flexWrap: 'nowrap',
+        maxWidth: '1440px', margin: '0 auto',
+        display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)',
         padding: '0 40px'
       }}>
-        {[...items, ...items].map((item, i) =>
+        {items.map((item, i) =>
         <div key={i} style={{
           padding: '22px 20px', display: 'flex', alignItems: 'center', gap: '14px',
-          borderRight: '1px solid #1e1e1e', minWidth: '200px', flexShrink: 0
+          borderRight: i < 4 ? '1px solid #1e1e1e' : 'none'
         }}>
-            <span style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:'30px', height:'30px', flexShink:0 }} aria-hidden="true">{item.icon}</span>
+            <span style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:'30px', height:'30px', flexShrink:0 }} aria-hidden="true">{item.icon}</span>
             <div>
               <div style={{ color: 'white', fontWeight: 600, fontSize: '13px', letterSpacing: '0.02em' }}>{item.label}</div>
               <div style={{ color: '#666', fontSize: '11px', marginTop: '2px' }}>{item.sub}</div>
