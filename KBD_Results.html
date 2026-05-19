@@ -252,8 +252,8 @@ function Nav({ year, make, model, onVehicleChange }) {
           ))}
         </div>
 
-        {/* Vehicle pill — hidden on mobile */}
-        <div className="nav-desktop-only" style={{position:'relative'}}>
+        {/* Vehicle pill */}
+        <div style={{position:'relative'}}>
           <button onClick={()=>setYmOpen(!ymOpen)} style={{
             background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.15)',
             borderRadius:'8px', color:'white', padding:'8px 14px', cursor:'pointer',
@@ -311,7 +311,7 @@ function Nav({ year, make, model, onVehicleChange }) {
           <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
           <span className="nav-desktop-only">Track Order</span>
         </a>
-        <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)} style={{ order: 99, background:'transparent', border:'1px solid #333', borderRadius:'6px', color:'#aaa', padding:'8px 10px', cursor:'pointer', flexDirection:'column', gap:'4px', alignItems:'center', justifyContent:'center' }} aria-label="Menu">
+        <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)} style={{ background:'transparent', border:'1px solid #333', borderRadius:'6px', color:'#aaa', padding:'8px 10px', cursor:'pointer', flexDirection:'column', gap:'4px', alignItems:'center', justifyContent:'center' }} aria-label="Menu">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
           </svg>
