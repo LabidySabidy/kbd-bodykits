@@ -67,12 +67,18 @@
     nav > div { padding: 0 16px !important; gap: 12px !important; }
     /* Page-level padding tighten */
     section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
+    /* TrustBar — horizontal scroll instead of stacking */
+    [data-trust-bar] { display: flex !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch; grid-template-columns: none !important; }
+    [data-trust-bar] > div { min-width: 175px; flex-shrink: 0; }
   }
   @media (max-width: 640px) {
-    /* Drop nav items beyond logo + cart */
-    nav [data-nav-link] { display: none !important; }
-    /* Bigger tap targets */
-    
+    /* Compact nav — horizontal scroll */
+    nav > div { overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 0 12px !important; gap: 6px !important; }
+    nav [data-nav-link] { font-size: 10px !important; padding: 0 6px !important; white-space: nowrap; flex-shrink: 0; }
+    nav > div > div:first-of-type { gap: 0 !important; }
+    /* Reduced section padding */
+    [data-section="why-kbd"] { padding: 60px 24px !important; }
+    [data-banner] { padding: 32px 24px !important; }
   }
 
   /* 6.4 Focus-visible — visible keyboard focus, not on click */
@@ -281,7 +287,7 @@ function Nav({ tweaks }) {
         {/* Nav links */}
         <div style={{ display: 'flex', gap: '0', flex: 1, alignItems: 'center' }}>
           {navItems.map(([href, item]) =>
-          <a key={item} href={href}
+          <a key={item} href={href} data-nav-link
           onMouseEnter={() => setActiveMenu(item)}
           onMouseLeave={() => setActiveMenu(null)}
           style={{
@@ -386,7 +392,7 @@ function Hero({ tweaks }) {
       overflow: 'hidden'
     }}>
       {/* Video background */}
-      <video ref={videoRef} poster={`${KBD_BASE}/banner2.jpg`} muted loop playsInline preload="none"
+      <video ref={videoRef} muted loop playsInline preload="none"
         className="hero-video"
         style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', opacity:videoReady?1:0, transition:'opacity 0.8s ease', zIndex:0 }}>
         <source src="assets/hero-bg.mp4" type="video/mp4"/>
@@ -566,7 +572,7 @@ function TrustBar() {
 
   return (
     <div style={{ background: 'var(--black)', borderBottom: '1px solid #1e1e1e' }}>
-      <div style={{
+      <div data-trust-bar style={{
         maxWidth: '1440px', margin: '0 auto',
         display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)',
         padding: '0 40px'
@@ -828,7 +834,7 @@ function WhyKBD() {
 
 
   return (
-    <section style={{ background: 'var(--black)', padding: '100px 40px', position: 'relative', overflow: 'hidden' }}>
+    <section data-section="why-kbd" style={{ background: 'var(--black)', padding: '100px 40px', position: 'relative', overflow: 'hidden' }}>
       {/* Background accents */}
       <div style={{ position: 'absolute', right: '-100px', top: '50%', transform: 'translateY(-50%)', width: '600px', height: '600px', background: 'radial-gradient(circle, oklch(0.48 0.22 25 / 0.07) 0%, transparent 70%)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px)', backgroundSize: '60px 60px', maskImage: 'radial-gradient(ellipse 80% 80% at 20% 50%, black 30%, transparent 100%)', pointerEvents: 'none' }} />
@@ -896,7 +902,7 @@ function WhyKBD() {
 
 function ShowUsYourRideBanner() {
   return (
-    <div style={{
+    <div data-banner style={{
       background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
       padding: '56px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden'
     }}>
@@ -1290,7 +1296,7 @@ function Footer() {
 
 function WillMakeItBanner() {
   return (
-    <div style={{
+    <div data-banner style={{
       background: 'var(--red)', padding: '56px 40px',
       textAlign: 'center', position: 'relative', overflow: 'hidden'
     }}>
