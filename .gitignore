@@ -1,3 +1,9 @@
+# Dependencies
+node_modules
+
+# Test results
+test-results
+
 # Vercel
 .vercel
 
