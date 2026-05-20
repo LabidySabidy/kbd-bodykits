@@ -80,9 +80,10 @@
       grid-row: auto !important;
       min-height: 260px;
     }
-  /* TrustBar — auto-scrolling marquee on mobile, grid on desktop */
+  }
   /* Desktop: hide duplicate trust items (needed only for mobile marquee loop) */
   [data-trust-bar] > div:nth-child(n+6) { display: none !important; }
+  /* TrustBar — auto-scrolling marquee on mobile, grid on desktop */
   @media (max-width: 900px) {
     [data-trust-bar] > div:nth-child(n+6) { display: flex !important; }
     [data-trust-bar] {
@@ -101,7 +102,6 @@
       0% { transform: translateX(0); }
       100% { transform: translateX(calc(-180px * 5)); }
     }
-  }
   }
   /* Hamburger — hidden by default, shown on mobile */
   .nav-hamburger { display: none; }
