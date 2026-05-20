@@ -6,6 +6,7 @@
 
 ## Done
 
+- [x] T-014 — Homepage mobile category grid reorder (2026-05-19) — Body Kits spans full-width at top, other 6 categories in 2-col grid below at ≤900px via CSS data-category-grid rule
 - [x] T-000 — PRD §9 grep checks (2026-05-17)
 - [x] T-001 — Click-through nav audit (2026-05-17) — 7 broken href="#" links fixed + social icon SVGs
 - [x] T-002 — Cart persistence (2026-05-17) — Homepage Cart(0) hardcoded fixed + Checkout confirmation cart snapshot

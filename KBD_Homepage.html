@@ -67,6 +67,16 @@
     nav > div { padding: 0 16px !important; gap: 12px !important; }
     /* Page-level padding tighten */
     section, main, footer > div, .kbd-page { padding-left: 16px !important; padding-right: 16px !important; }
+    /* Category grid — Body Kits full-width at top, others 2-col below */
+    [data-category-grid] {
+      grid-template-columns: 1fr 1fr !important;
+      grid-template-rows: auto !important;
+    }
+    [data-category-grid] > div:first-child {
+      grid-column: 1 / -1 !important;
+      grid-row: auto !important;
+      min-height: 260px;
+    }
   /* TrustBar — auto-scrolling marquee on mobile, grid on desktop */
   @media (max-width: 900px) {
     [data-trust-bar] {
@@ -664,7 +674,7 @@ function CategoryGrid() {
           }}>View all categories →</a>
         </div>
 
-        <div style={{
+        <div data-category-grid="true" style={{
           display: 'grid',
           gridTemplateColumns: '2fr 1fr 1fr',
           gridTemplateRows: '200px 200px 200px',

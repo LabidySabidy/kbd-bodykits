@@ -7,12 +7,28 @@
 
 
 
-<!-- session-in-progress:start=2026-05-19T03:51:50.703Z -->
-## 2026-05-18 23:10 — Plan written _(in progress)_
+
+
+<!-- session-in-progress:start=2026-05-19T20:31:20.767Z -->
+## 2026-05-20 11:50 — **Changed:** `KBD_Homepage.html` — data attribute + CSS rule
+**Verified:** Playw... _(in progress)_
+**Changed:** `KBD_Homepage.html` — data attribute + CSS rule
+**Verified:** Playwright — 4/4 homepage tests pass (console-error-free, no overflow, hamburger present)
+**Next:** Open the homepage at ≤900px to see the new layout
+<!-- end-session-in-progress -->
+## 2026-05-19 20:35 — Homepage category grid mobile reorder — T-014
+**Changed:** `KBD_Homepage.html` — added `data-category-grid` attribute to CategoryGrid container, CSS rule in @media (max-width: 900px) to restructure mobile layout: Body Kits spans full-width at top (min-height 260px), other 6 categories in 2-column grid below.
+**Verified:** Playwright — all 4 Homepage tests pass (console-error-free, no horizontal overflow, hamburger visible, nav links hidden).
+**Next:** None — change complete.
+
+## 2026-05-19 15:35 — PRD update to v1.3
+**Changed:** `PRD.md` — §8.2 (image refs + Playwright), §9 (full rewrite), §10 (all checkboxes flipped)
+**Verified:** Reviewed edited sections — all three edit blocks applied cleanly, no overlap, version bumped to v1.3
+**Next:** PRD is sync'd with the codebase. If you want the two remaining "Nice to have" items tackled (nav standardization or review submission UX), say the word.
+## 2026-05-18 23:10 — Plan written
 Plan written. This hits the "spans >3 files" grill trigger, but all changes are mechanical — CSS sync (copy pattern) + JSX hamburger (copy pattern) + simple removals. No new logic or dependencies.
 
 Proceed with this plan, or want me to grill any phase?
-<!-- end-session-in-progress -->
 ## 2026-05-18 22:42 — **Changed:** All 10 HTML files — CSS media query fixes  
 **Verified:** Homepage ...
 **Changed:** All 10 HTML files — CSS media query fixes  
