@@ -775,7 +775,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(<ProductPage/>);
   var mql = window.matchMedia("(max-width: 640px)");
   function hideNav() {
     var links = document.querySelector(".nav-links");
-    if (links) links.style.display = mql.matches ? "none" : "";
+    if (links) links.style.display = mql.matches ? "none" : "flex";
   }
   hideNav();
   mql.addEventListener("change", hideNav);
@@ -792,7 +792,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(<ProductPage/>);
   function applyMobileNav() {
     var isMobile = mql.matches;
     var links = document.querySelector(".nav-links");
-    if (links) links.style.display = isMobile ? "none" : "";
+    if (links) links.style.display = isMobile ? "none" : "flex";
     var hamburger = document.querySelector(".nav-hamburger");
     if (hamburger) hamburger.style.display = isMobile ? "flex" : "none";
     document.querySelectorAll(".nav-desktop-only").forEach(function(el) {

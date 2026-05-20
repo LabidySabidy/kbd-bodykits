@@ -81,7 +81,10 @@
       min-height: 260px;
     }
   /* TrustBar — auto-scrolling marquee on mobile, grid on desktop */
+  /* Desktop: hide duplicate trust items (needed only for mobile marquee loop) */
+  [data-trust-bar] > div:nth-child(n+6) { display: none; }
   @media (max-width: 900px) {
+    [data-trust-bar] > div:nth-child(n+6) { display: flex; }
     [data-trust-bar] {
       display: flex !important;
       flex-wrap: nowrap !important;
