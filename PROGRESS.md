@@ -10,11 +10,10 @@
 
 
 <!-- session-in-progress:start=2026-05-19T20:31:20.767Z -->
-## 2026-05-20 11:50 — **Changed:** `KBD_Homepage.html` — data attribute + CSS rule
-**Verified:** Playw... _(in progress)_
-**Changed:** `KBD_Homepage.html` — data attribute + CSS rule
-**Verified:** Playwright — 4/4 homepage tests pass (console-error-free, no overflow, hamburger present)
-**Next:** Open the homepage at ≤900px to see the new layout
+## 2026-05-20 15:44 — The rule was inside the first `@media (max-width: 900px)` block the whole time —... _(in progress)_
+The rule was inside the first `@media (max-width: 900px)` block the whole time — it was only hiding duplicates on mobile, where we need them FOR the marquee. Restructured: first `@media` now closes before the trust bar CSS, `display: none !important` lives at global scope (desktop), separate `@media` block handles mobile override.
+
+Hard refresh — trust bar should show exactly 5 items on desktop now.
 <!-- end-session-in-progress -->
 ## 2026-05-19 20:35 — Homepage category grid mobile reorder — T-014
 **Changed:** `KBD_Homepage.html` — added `data-category-grid` attribute to CategoryGrid container, CSS rule in @media (max-width: 900px) to restructure mobile layout: Body Kits spans full-width at top (min-height 260px), other 6 categories in 2-column grid below.
