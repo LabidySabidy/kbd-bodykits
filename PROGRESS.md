@@ -5,6 +5,22 @@
 
 
 
+
+
+## 2026-05-21 15:41 — ## Step 2 — Summarize
+
+```
+Observed: On mobile, when the vehicle selector dropdo...
+## Step 2 — Summarize
+
+```
+Observed: On mobile, when the vehicle selector dropdown is open (the "Viewing: Year Make Model" pill on Results page), tapping outside the dropdown does nothing. You must tap the dropdown toggle button again or the "Update Vehicle" button to close it.
+Expected: Tapping anywhere outside the dropdown closes it.
+Reproduction: Open KBD_Results.html at 375px, click "Viewing:" pill to open dropdown, then tap elsewhere on page.
+Environment: Mobile viewport, all browsers
+Se...
+## 2026-05-21 14:28 — **Next:** Nothing in queue
+**Next:** Nothing in queue. All pages have nav + mobile MOs. Only Equipped-print lacks full mobile testing (no nav, different concerns).
 ## 2026-05-21 14:11 — Plan written
 Plan written. Grill trigger fires (9 files), but every change is mechanical — the Track Order removal + hamburger addition is identical across 6 files, and the other fixes follow established patterns.
 

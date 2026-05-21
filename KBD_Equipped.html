@@ -219,6 +219,22 @@ const BUILDS = [
 function Nav() {
   const cartCount = (() => { try { return JSON.parse(localStorage.getItem('kbd_cart')||'[]').reduce((s,i)=>s+i.qty,0); } catch { return 0; } })();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    function handleClick(e) {
+      const dropdown = document.querySelector('.nav-dropdown');
+      const hamburger = document.querySelector('.nav-hamburger');
+      if ((!dropdown || !dropdown.contains(e.target)) && (!hamburger || !hamburger.contains(e.target))) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener('click', handleClick);
+    document.addEventListener('touchstart', handleClick);
+    return () => {
+      document.removeEventListener('click', handleClick);
+      document.removeEventListener('touchstart', handleClick);
+    };
+  }, []);
   return (
     <nav style={{ position:'sticky', top:0, zIndex:1000, background:'var(--black)', borderBottom:'1px solid #222' }}>
       <div style={{ maxWidth:'1440px', margin:'0 auto', display:'flex', alignItems:'center', padding:'0 40px', height:'64px', gap:'24px' }}>

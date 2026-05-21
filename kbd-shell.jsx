@@ -3,6 +3,24 @@
 
 function Nav({ active }) {
   const [menuOpen, setMenuOpen] = React.useState(false);
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    function handleClick(e) {
+      const dropdown = document.querySelector('.nav-dropdown');
+      const hamburger = document.querySelector('.nav-hamburger');
+      if ((!dropdown || !dropdown.contains(e.target)) && (!hamburger || !hamburger.contains(e.target))) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener('click', handleClick);
+    document.addEventListener('touchstart', handleClick);
+    return () => {
+      document.removeEventListener('click', handleClick);
+      document.removeEventListener('touchstart', handleClick);
+    };
+  }, []);
+
   const items = [
     ['KBD_Homepage.html',     'Shop By Vehicle'],
     ['KBD_Results.html',      'Body Kits'],

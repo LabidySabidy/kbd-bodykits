@@ -220,7 +220,39 @@ function Stars({ rating, size=12 }) {
 // ── NAV ───────────────────────────────────────────────────────────────────
 function Nav({ year, make, model, onVehicleChange }) {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    function handleClick(e) {
+      const dropdown = document.querySelector('.nav-dropdown');
+      const hamburger = document.querySelector('.nav-hamburger');
+      if ((!dropdown || !dropdown.contains(e.target)) && (!hamburger || !hamburger.contains(e.target))) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener('click', handleClick);
+    document.addEventListener('touchstart', handleClick);
+    return () => {
+      document.removeEventListener('click', handleClick);
+      document.removeEventListener('touchstart', handleClick);
+    };
+  }, []);
   const [ymOpen, setYmOpen] = useState(false);
+
+  useEffect(() => {
+    function handleYmClick(e) {
+      const ymmDropdown = document.querySelector('[style*="Change Vehicle"]');
+      const ymmToggle = document.querySelector('[style*="Viewing:"]');
+      if ((!ymmDropdown || !ymmDropdown.contains(e.target)) && (!ymmToggle || !ymmToggle.contains(e.target))) {
+        setYmOpen(false);
+      }
+    }
+    document.addEventListener('click', handleYmClick);
+    document.addEventListener('touchstart', handleYmClick);
+    return () => {
+      document.removeEventListener('click', handleYmClick);
+      document.removeEventListener('touchstart', handleYmClick);
+    };
+  }, []);
   const [newYear, setNewYear] = useState(year);
   const [newMake, setNewMake] = useState(make);
   const [newModel, setNewModel] = useState(model);

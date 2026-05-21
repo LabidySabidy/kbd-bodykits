@@ -310,6 +310,22 @@ function AnnouncementBar() {
 
 function Nav({ tweaks }) {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    function handleClick(e) {
+      const dropdown = document.querySelector('.nav-dropdown');
+      const hamburger = document.querySelector('.nav-hamburger');
+      if ((!dropdown || !dropdown.contains(e.target)) && (!hamburger || !hamburger.contains(e.target))) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener('click', handleClick);
+    document.addEventListener('touchstart', handleClick);
+    return () => {
+      document.removeEventListener('click', handleClick);
+      document.removeEventListener('touchstart', handleClick);
+    };
+  }, []);
   const [activeMenu, setActiveMenu] = useState(null);
   const navItems = [
   ['KBD_Homepage.html', 'Shop By Vehicle'],
