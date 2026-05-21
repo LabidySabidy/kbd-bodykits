@@ -6,6 +6,7 @@
 
 ## Done
 
+- [x] T-016 — Cross-page header standardization + Blog/Order-Status mobile (2026-05-21) — Hamburger marginLeft:auto on Homepage/Product/Equipped/Equipped-print, moved Homepage hamburger inside flex container, enhanced MO for Blog (collapse 1.4fr/1fr, 1fr/240px, 200px/1fr, footer) + Order-Status (collapse 1fr/320px, 1fr 1fr auto, footer), About hero clamp 56→36px, CSS dedup on Blog + Order-Status, +9 Playwright tests
 - [x] T-015 — About page mobile fix (2026-05-21) — MutationObserver collapses 4 grid layouts at ≤640px (editorial 140px/1fr, CTA 1fr/auto, footer 1.6fr/1fr/1fr/1fr, hero stats wrap), hamburger marginLeft auto in kbd-shell.jsx, deduplicated CSS, 4 new Playwright tests
 - [x] T-014 — Homepage mobile category grid reorder (2026-05-19) — Body Kits spans full-width at top, other 6 categories in 2-col grid below at ≤900px via CSS data-category-grid rule
 - [x] T-000 — PRD §9 grep checks (2026-05-17)

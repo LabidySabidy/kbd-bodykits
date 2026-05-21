@@ -1,61 +1,66 @@
-# Plan — About Page Mobile Fix
+# Plan — Cross-Page Header Standardization + Mobile Fixes
 
-> Fix squished content on KBD_About.html at mobile viewport (≤640px).
+> Standardize cart/hamburger layout across all pages, fix Blog/Order-Status mobile, fix About hero clipping.
 
 ## Goal
-All sections on the About page stack vertically on mobile, content uses full viewport width, no text is forced narrower than ~280px.
+Every page with a nav bar has: Cart icon at far right, hamburger just to its left. All pages with unique grid layouts get mobile collapse. No horizontal overflow or clipped text at 375px.
 
 ## Approach
-Add a page-specific MutationObserver JS block (same pattern as Results and Will_Make_It) that collapses the four grid/flex layouts not caught by existing CSS rules: editorial articles (`140px 1fr`), CTA section (`1fr auto`), footer (`1.6fr 1fr 1fr 1fr`), and hero stats row (`display:flex` with no wrap). Clean up duplicated `@media` blocks. Add Playwright tests verifying mobile content width ≥280px for editorial sections.
-
-## Phases
-
-### Phase 1 — Add mobile grid-collapse MutationObserver
-- Add JS block (same pattern as Results page) that:
-  - Collapses `[style*="140px 1fr"]` → `1fr` on ≤640px
-  - Collapses `[style*="1fr auto"]` → `1fr` on ≤640px
-  - Collapses `[style*="1.6fr 1fr 1fr 1fr"]` → `1fr` on ≤640px
-  - Sets `flexWrap: 'wrap'` and `gap: '16px'` on hero stats row at ≤640px
-  - Handles hamburger visibility (already partially present but incomplete)
-
-### Phase 2 — Clean up duplicated CSS
-- Remove the duplicated `@media (max-width: 640px)` block from `<style>` — there are two identical copies concatenated
-- Remove the duplicated `@media (max-width: 900px)` block and its orphaned fragment
-- Verify no loss of CSS coverage
-
-### Phase 3 — Add Playwright tests
-- Add `KBD_About.html` to `PAGES_WITH_NAV` list (it has hamburger nav via kbd-shell.jsx + MutationObserver)
-- Add test: "editorial content width ≥280px on mobile" — checks each article content column isn't squished
-- Add test: "footer columns stack on mobile" — checks footer grid is 1 column
-- Add test: "hamburger visible at mobile on About" — since it's now in PAGES_WITH_NAV, gets the standard hamburger tests
+Four independent work streams, all mechanical (copy established patterns). Header fix is a one-line inline style addition (`marginLeft:'auto'`) to 4 pages missing it. Blog and Order-Status get the same enhanced MutationObserver pattern T-015 established for About. About hero gets font-size reduction + padding reduction in the existing MO. Tests added for all new behavior.
 
 ## Files that will change
 
-| File | Change | Phase |
+| File | Change | Stream |
 |---|---|---|
-| `KBD_About.html` | Add MutationObserver JS block; remove duplicated CSS blocks | 1, 2 |
-| `kbd-shell.jsx` | Maybe: add `marginLeft: "auto"` to hamburger inline style so it flushes right | 1 |
-| `tests/mobile.spec.mjs` | Add About-specific content-width tests; move About to PAGES_WITH_NAV | 3 |
+| `KBD_Homepage.html` | Add `marginLeft:'auto'` to hamburger button style | A — Header |
+| `KBD_Product.html` | Add `marginLeft:'auto'` to hamburger button style | A — Header |
+| `KBD_Equipped.html` | Add `marginLeft:'auto'` to hamburger button style | A — Header |
+| `KBD_Equipped-print.html` | Add `marginLeft:'auto'` to hamburger button style | A — Header |
+| `KBD_About.html` | Reduce hero h1 clamp min to 36px, reduce vertical padding; add to existing MO | B — About hero |
+| `KBD_Blog.html` | Replace old MO with enhanced MO (nav + grid collapse); add content-width test | C — Blog mobile |
+| `KBD_Order_Status.html` | Replace old MO with enhanced MO (nav + grid collapse); add content-width test | D — Order-Status mobile |
+| `tests/mobile.spec.mjs` | Add Blog/Order-Status layout tests, header hamburger position test, About hero width test | All |
+
+## Phases (execution order)
+
+### Stream A — Header standardization (mechanical, 4 pages)
+1. Add `marginLeft:'auto'` to hamburger inline style in Homepage, Product, Equipped, Equipped-print
+2. Add Playwright test: hamburger is to the left of Cart on all PAGES_WITH_NAV
+
+### Stream B — About hero clipping
+1. In existing MO: also reduce h1 font-size and hero section padding at ≤640px
+2. Add Playwright test: no heading width exceeds viewport width
+
+### Stream C — Blog mobile
+1. Replace old MO with enhanced MO collapsing: `1.4fr 1fr`→`1fr`, `1fr 240px`→`1fr`, `200px 1fr`→`1fr`
+2. Remove duplicated @media blocks from `<style>`
+3. Add Playwright tests: grid collapse + content readable
+
+### Stream D — Order Status mobile
+1. Replace old MO with enhanced MO collapsing: `1fr 320px`→`1fr`, `1fr 1fr auto`→`1fr`
+2. Remove duplicated @media blocks from `<style>`
+3. Add Playwright tests: grid collapse + content readable
+
+### Final — Gate
+- Run full `npx playwright test --reporter=line`
+- Commit + push all changes
 
 ## Acceptance criteria
-- [ ] Mobile (375px): editorial article content column ≥280px wide (3 instances)
-- [ ] Mobile: hero stats row wraps to 2-3 items per row, no squishing
-- [ ] Mobile: CTA button stacks below text
-- [ ] Mobile: footer columns stack in 1 column
-- [ ] Mobile: hamburger visible, nav-links hidden
-- [ ] Desktop (1440px): layout visually unchanged
-- [ ] 0 Playwright test failures
-- [ ] 0 console errors
+- [ ] Homepage hamburger has `marginLeft:'auto'` (flush right, Cart to its right)
+- [ ] Product hamburger has `marginLeft:'auto'`
+- [ ] Equipped hamburger has `marginLeft:'auto'`
+- [ ] Equipped-print hamburger has `marginLeft:'auto'`
+- [ ] About hero h1 fits within viewport at 375px (no clipped text)
+- [ ] Blog featured article grid collapses to 1 column at 375px
+- [ ] Blog post layout (1fr 240px) collapses to 1 column at 375px
+- [ ] Blog related article cards (200px 1fr) collapse to 1 column at 375px
+- [ ] Order Status main layout (1fr 320px) collapses to 1 column at 375px
+- [ ] Order Status form row (1fr 1fr auto) collapses to 1 column at 375px
+- [ ] All PAGES_WITH_NAV: hamburger visible, nav-links hidden on mobile
+- [ ] No pages broken, 0 console errors
+- [ ] All Playwright tests pass
 
 ## Not in scope
-- KBD_Blog.html or KBD_Order_Status.html mobile fixes (same shell, different content)
-- Footer redesign — just stacking columns
-- Fixing the duplicated CSS in other pages (they all have similar issues)
-
-## References
-- Results page MutationObserver pattern (bottom of `KBD_Results.html`)
-- Will_Make_It MutationObserver pattern (bottom of `KBD_Will_Make_It.html`)
-- Investigate-bug analysis from this session — root cause: no page-specific JS handles About's unique grid templates
-
-## Current step
-PLAN.md written — awaiting approval before implementation.
+- Checkout page — it has a minimal checkout Nav with no hamburger; it's a flow, not a browse page
+- Full CSS dedup on all pages (Blog/Order-Status only; others have pre-existing dupes tracked separately)
+- Desktop layout changes — all changes are mobile-only (≤640px)

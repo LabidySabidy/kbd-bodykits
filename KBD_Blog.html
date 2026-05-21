@@ -54,24 +54,6 @@
     section, main, footer > div { padding-left: 16px !important; padding-right: 16px !important; }
   }
 
-
-  /* Nav hamburger + dropdown */
-  @media (max-width: 640px) {
-    nav > div { padding: 0 12px !important; gap: 8px !important; }
-    .nav-links { display: none !important; }
-    .nav-hamburger { display: flex !important; }
-    .nav-desktop-only { display: none !important; }
-    section, main, footer > div { padding-left: 16px !important; padding-right: 16px !important; }
-  }
-  .nav-hamburger { display: none; }
-  .nav-dropdown a {
-    display: block; padding: 14px 24px; color: #ccc;
-    font-size: 14px; font-weight: 500; text-decoration: none;
-    letter-spacing: 0.04em; border-bottom: 1px solid #1a1a1a;
-    transition: color 0.15s;
-  }
-  .nav-dropdown a:hover, .nav-dropdown a:active { color: white; background: #111; }
-
   @media (max-width: 900px) {
     /* Generic 3-column → 1-column collapse for product / build / blog grids */
     [style*="grid-template-columns: repeat(4,"], [style*="grid-template-columns:repeat(4,"],
@@ -384,20 +366,40 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 <script>
 (function(){
   var mql = window.matchMedia("(max-width: 640px)");
-  function hideNav() {
+
+  function applyMobile() {
+    var isMobile = mql.matches;
+
+    // Nav: hamburger + desktop-only
     var links = document.querySelector(".nav-links");
-    if (links) links.style.display = mql.matches ? "none" : "";
+    if (links) links.style.display = isMobile ? "none" : "flex";
     var hamburger = document.querySelector(".nav-hamburger");
-    if (hamburger) hamburger.style.display = mql.matches ? "flex" : "none";
+    if (hamburger) hamburger.style.display = isMobile ? "flex" : "none";
+    document.querySelectorAll(".nav-desktop-only").forEach(function(el) {
+      el.style.display = isMobile ? "none" : "";
+    });
+
+    // Collapse featured article (1.4fr 1fr → 1fr)
+    var featuredGrid = document.querySelector('[style*="1.4fr 1fr"]');
+    if (featuredGrid) featuredGrid.style.gridTemplateColumns = isMobile ? "1fr" : "1.4fr 1fr";
+
+    // Collapse blog post layout (1fr 240px → 1fr)
+    var postGrid = document.querySelector('[style*="1fr 240px"]');
+    if (postGrid) postGrid.style.gridTemplateColumns = isMobile ? "1fr" : "1fr 240px";
+
+    // Collapse related article cards (200px 1fr → 1fr)
+    document.querySelectorAll('[style*="200px 1fr"]').forEach(function(el) {
+      el.style.gridTemplateColumns = isMobile ? "1fr" : "200px 1fr";
+    });
+
+    // Collapse footer columns (1.6fr 1fr 1fr 1fr → 1fr)
+    var footerGrid = document.querySelector('[style*="1.6fr 1fr 1fr 1fr"]');
+    if (footerGrid) footerGrid.style.gridTemplateColumns = isMobile ? "1fr" : "1.6fr 1fr 1fr 1fr";
   }
-  hideNav();
-  mql.addEventListener("change", hideNav);
-  var observer = new MutationObserver(function(){
-    var links = document.querySelector(".nav-links");
-    if (links && links.style.display !== "none" && mql.matches) links.style.display = "none";
-    var hamburger = document.querySelector(".nav-hamburger");
-    if (hamburger && hamburger.style.display !== "flex" && mql.matches) hamburger.style.display = "flex";
-  });
+
+  applyMobile();
+  mql.addEventListener("change", applyMobile);
+  var observer = new MutationObserver(applyMobile);
   observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
 })();
 </script>

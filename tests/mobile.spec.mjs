@@ -13,11 +13,11 @@ const PAGES_WITH_NAV = [
   'KBD_Equipped.html',
   'KBD_Will_Make_It.html',
   'KBD_About.html',
+  'KBD_Blog.html',
+  'KBD_Order_Status.html',
 ];
 
 const PAGES_WITHOUT_NAV = [
-  'KBD_Blog.html',
-  'KBD_Order_Status.html',
   'KBD_Equipped-print.html',
   'KBD_Checkout.html',
 ];
@@ -245,5 +245,123 @@ test.describe(`${ABOUT_PAGE} — mobile layout`, () => {
     expect(ctaCols).not.toBeNull();
     const ctaTracks = ctaCols.trim().split(/\s+/);
     expect(ctaTracks.length, `CTA grid should be 1 column, got ${ctaTracks.length}: ${ctaCols}`).toBe(1);
+  });
+
+  test('hero heading fits within viewport on mobile', async ({ page: p }) => {
+    await p.setViewportSize(VIEWPORT);
+    await p.goto(`file://${PROJECT}/${ABOUT_PAGE}`, { waitUntil: 'networkidle' });
+    await p.waitForTimeout(1500);
+
+    const h1Width = await p.evaluate(() => {
+      const h1 = document.querySelector('h1');
+      return h1 ? h1.getBoundingClientRect().width : 0;
+    });
+    // h1 should not exceed viewport width minus padding
+    expect(h1Width, `Hero h1 width ${h1Width}px exceeds viewport`).toBeLessThanOrEqual(375);
+  });
+});
+
+// Blog page — mobile content layout
+const BLOG_PAGE = 'KBD_Blog.html';
+test.describe(`${BLOG_PAGE} — mobile layout`, () => {
+  test.beforeEach(async ({ page: p }) => {
+    await p.route('**/tweaks-panel.jsx', (route) => {
+      route.fulfill({ contentType: 'text/javascript', body: readFileSync(`${PROJECT}/tweaks-panel.jsx`, 'utf-8') });
+    });
+    await p.route('**/kbd-shell.jsx', (route) => {
+      route.fulfill({ contentType: 'text/javascript', body: readFileSync(`${PROJECT}/kbd-shell.jsx`, 'utf-8') });
+    });
+  });
+
+  test('blog content is readable width on mobile', async ({ page: p }) => {
+    await p.setViewportSize(VIEWPORT);
+    await p.goto(`file://${PROJECT}/${BLOG_PAGE}`, { waitUntil: 'networkidle' });
+    await p.waitForTimeout(1500);
+
+    // Blog article headings should be readable width
+    const widths = await p.evaluate(() => {
+      const headings = document.querySelectorAll('h2, h3');
+      return Array.from(headings).map(el => el.getBoundingClientRect().width);
+    });
+    expect(widths.length).toBeGreaterThan(0);
+    widths.forEach(w => {
+      expect(w, `Heading width ${w}px is too narrow`).toBeGreaterThanOrEqual(200);
+    });
+  });
+});
+
+// Order Status page — mobile content layout
+const OS_PAGE = 'KBD_Order_Status.html';
+test.describe(`${OS_PAGE} — mobile layout`, () => {
+  test.beforeEach(async ({ page: p }) => {
+    await p.route('**/tweaks-panel.jsx', (route) => {
+      route.fulfill({ contentType: 'text/javascript', body: readFileSync(`${PROJECT}/tweaks-panel.jsx`, 'utf-8') });
+    });
+    await p.route('**/kbd-shell.jsx', (route) => {
+      route.fulfill({ contentType: 'text/javascript', body: readFileSync(`${PROJECT}/kbd-shell.jsx`, 'utf-8') });
+    });
+  });
+
+  test('order-status content is readable width on mobile', async ({ page: p }) => {
+    await p.setViewportSize(VIEWPORT);
+    await p.goto(`file://${PROJECT}/${OS_PAGE}`, { waitUntil: 'networkidle' });
+    await p.waitForTimeout(1500);
+
+    // Check that main content area is not squished by sidebar
+    const widths = await p.evaluate(() => {
+      const headings = document.querySelectorAll('h1, h2');
+      return Array.from(headings).map(el => el.getBoundingClientRect().width);
+    });
+    expect(widths.length).toBeGreaterThan(0);
+    widths.forEach(w => {
+      expect(w, `Heading width ${w}px is too narrow`).toBeGreaterThanOrEqual(200);
+    });
+  });
+});
+
+// Header layout: hamburger left of Cart on all nav pages
+test.describe('Header — hamburger position', () => {
+  PAGES_WITH_NAV.forEach((page) => {
+    test(`${page} hamburger is left of cart on mobile`, async ({ page: p }) => {
+      await p.route('**/tweaks-panel.jsx', (route) => {
+        route.fulfill({ contentType: 'text/javascript', body: readFileSync(`${PROJECT}/tweaks-panel.jsx`, 'utf-8') });
+      });
+      await p.route('**/kbd-shell.jsx', (route) => {
+        route.fulfill({ contentType: 'text/javascript', body: existsSync(`${PROJECT}/kbd-shell.jsx`) ? readFileSync(`${PROJECT}/kbd-shell.jsx`, 'utf-8') : '' });
+      });
+
+      await p.setViewportSize(VIEWPORT);
+      await p.goto(`file://${PROJECT}/${page}`, { waitUntil: 'networkidle' });
+      await p.waitForTimeout(1500);
+
+      const pos = await p.evaluate(() => {
+        const hamburger = document.querySelector('.nav-hamburger');
+        if (!hamburger) return null;
+        const hRect = hamburger.getBoundingClientRect();
+        // Find cart button (contains "Cart" text, is the last button in nav)
+        const buttons = document.querySelectorAll('nav button');
+        let cartBtn = null;
+        buttons.forEach(b => { if (b.textContent.includes('Cart')) cartBtn = b; });
+        if (!cartBtn) {
+          // Try link with cart icon
+          const cartLinks = document.querySelectorAll('nav a[href*="Checkout"]');
+          cartLinks.forEach(a => { if (a.textContent.includes('Cart')) cartBtn = a; });
+        }
+        if (!cartBtn) return { hLeft: hRect.left, hRight: hRect.right };
+        const cRect = cartBtn.getBoundingClientRect();
+        return {
+          hLeft: hRect.left, hRight: hRect.right,
+          cLeft: cRect.left, cRight: cRect.right,
+          hamburgerLeftOfCart: hRect.right <= cRect.left
+        };
+      });
+
+      expect(pos).not.toBeNull();
+      if (pos.cLeft !== undefined) {
+        expect(pos.hamburgerLeftOfCart,
+          `Hamburger right edge ${pos.hRight} should be <= cart left edge ${pos.cLeft}`
+        ).toBe(true);
+      }
+    });
   });
 });
