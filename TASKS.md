@@ -6,6 +6,7 @@
 
 ## Done
 
+- [x] T-015 — About page mobile fix (2026-05-21) — MutationObserver collapses 4 grid layouts at ≤640px (editorial 140px/1fr, CTA 1fr/auto, footer 1.6fr/1fr/1fr/1fr, hero stats wrap), hamburger marginLeft auto in kbd-shell.jsx, deduplicated CSS, 4 new Playwright tests
 - [x] T-014 — Homepage mobile category grid reorder (2026-05-19) — Body Kits spans full-width at top, other 6 categories in 2-col grid below at ≤900px via CSS data-category-grid rule
 - [x] T-000 — PRD §9 grep checks (2026-05-17)
 - [x] T-001 — Click-through nav audit (2026-05-17) — 7 broken href="#" links fixed + social icon SVGs

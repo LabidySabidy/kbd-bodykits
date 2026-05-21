@@ -12,10 +12,10 @@ const PAGES_WITH_NAV = [
   'KBD_Product.html',
   'KBD_Equipped.html',
   'KBD_Will_Make_It.html',
+  'KBD_About.html',
 ];
 
 const PAGES_WITHOUT_NAV = [
-  'KBD_About.html',
   'KBD_Blog.html',
   'KBD_Order_Status.html',
   'KBD_Equipped-print.html',
@@ -145,5 +145,105 @@ test.describe('Homepage — trust bar', () => {
     const firstItem = trustBar.locator('> div').first();
     const animation = await firstItem.evaluate((el) => getComputedStyle(el).animationName);
     expect(animation).toContain('trust-scroll');
+  });
+});
+
+// About page — mobile content layout
+const ABOUT_PAGE = 'KBD_About.html';
+test.describe(`${ABOUT_PAGE} — mobile layout`, () => {
+  test.beforeEach(async ({ page: p }) => {
+    await p.route('**/tweaks-panel.jsx', (route) => {
+      route.fulfill({
+        contentType: 'text/javascript',
+        body: readFileSync(`${PROJECT}/tweaks-panel.jsx`, 'utf-8'),
+      });
+    });
+    await p.route('**/kbd-shell.jsx', (route) => {
+      route.fulfill({
+        contentType: 'text/javascript',
+        body: readFileSync(`${PROJECT}/kbd-shell.jsx`, 'utf-8'),
+      });
+    });
+  });
+
+  test('editorial articles stack vertically on mobile', async ({ page: p }) => {
+    await p.setViewportSize(VIEWPORT);
+    await p.goto(`file://${PROJECT}/${ABOUT_PAGE}`, { waitUntil: 'networkidle' });
+    await p.waitForTimeout(1500);
+
+    // Articles should be 1-column grid after MO collapses them
+    const columns = await p.evaluate(() => {
+      const articles = document.querySelectorAll('article');
+      if (articles.length === 0) return [];
+      return Array.from(articles).map(el => getComputedStyle(el).gridTemplateColumns);
+    });
+    expect(columns.length).toBeGreaterThanOrEqual(3);
+    columns.forEach(col => {
+      // getComputedStyle resolves fr to px; single-column means 1 track
+      const tracks = col.trim().split(/\s+/);
+      expect(tracks.length, `Article grid should be 1 column, got ${tracks.length}: ${col}`).toBe(1);
+    });
+  });
+
+  test('editorial content column is readable width on mobile', async ({ page: p }) => {
+    await p.setViewportSize(VIEWPORT);
+    await p.goto(`file://${PROJECT}/${ABOUT_PAGE}`, { waitUntil: 'networkidle' });
+    await p.waitForTimeout(1500);
+
+    // Editorial section headings should be at least 280px wide (not squished by 140px sidebar)
+    const widths = await p.evaluate(() => {
+      const headings = document.querySelectorAll('h2');
+      return Array.from(headings).map(el => el.getBoundingClientRect().width);
+    });
+    widths.forEach(w => {
+      expect(w, `Heading width ${w}px is too narrow`).toBeGreaterThanOrEqual(280);
+    });
+  });
+
+  test('footer columns stack on mobile', async ({ page: p }) => {
+    await p.setViewportSize(VIEWPORT);
+    await p.goto(`file://${PROJECT}/${ABOUT_PAGE}`, { waitUntil: 'networkidle' });
+    await p.waitForTimeout(1500);
+
+    // Footer grid should collapse to 1 column
+    const footerCols = await p.evaluate(() => {
+      const footer = document.querySelector('footer');
+      if (!footer) return null;
+      // Footer grid is the first grid child inside footer > div
+      const grids = footer.querySelectorAll('[style*="grid"]');
+      for (const g of grids) {
+        const cols = getComputedStyle(g).gridTemplateColumns;
+        // The main column grid will have multiple columns on desktop
+        if (cols && cols !== 'none') return cols;
+      }
+      return null;
+    });
+    expect(footerCols).not.toBeNull();
+    const footerTracks = footerCols.trim().split(/\s+/);
+    expect(footerTracks.length, `Footer grid should be 1 column, got ${footerTracks.length}: ${footerCols}`).toBe(1);
+  });
+
+  test('CTA section stacks vertically on mobile', async ({ page: p }) => {
+    await p.setViewportSize(VIEWPORT);
+    await p.goto(`file://${PROJECT}/${ABOUT_PAGE}`, { waitUntil: 'networkidle' });
+    await p.waitForTimeout(1500);
+
+    // CTA section: the grid with the phone number + "Get In Touch" button
+    const ctaCols = await p.evaluate(() => {
+      // Find the section that contains the phone number
+      const phoneLink = document.querySelector('a[href="tel:18773993794"]');
+      if (!phoneLink) return null;
+      // Walk up to find the grid parent
+      let el = phoneLink.parentElement;
+      while (el) {
+        const cols = getComputedStyle(el).gridTemplateColumns;
+        if (cols && cols !== 'none') return cols;
+        el = el.parentElement;
+      }
+      return null;
+    });
+    expect(ctaCols).not.toBeNull();
+    const ctaTracks = ctaCols.trim().split(/\s+/);
+    expect(ctaTracks.length, `CTA grid should be 1 column, got ${ctaTracks.length}: ${ctaCols}`).toBe(1);
   });
 });
