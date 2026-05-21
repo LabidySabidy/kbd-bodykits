@@ -324,12 +324,17 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
     var footerGrid = document.querySelector('[style*="1.6fr 1fr 1fr 1fr"]');
     if (footerGrid) footerGrid.style.gridTemplateColumns = isMobile ? "1fr" : "1.6fr 1fr 1fr 1fr";
 
-    // Wrap hero stats row
-    var heroStatsRow = document.querySelector('[style*="gap: 40px"]');
-    if (heroStatsRow && heroStatsRow.parentElement && heroStatsRow.parentElement.querySelector('[style*="~50"]')) {
-      heroStatsRow.style.flexWrap = isMobile ? "wrap" : "";
-      heroStatsRow.style.gap = isMobile ? "16px" : "40px";
-    }
+    // Wrap hero stats row and reduce stat font sizes
+    var heroFlexContainers = document.querySelectorAll('[style*="display: flex"], [style*="display:flex"]');
+    heroFlexContainers.forEach(function(container) {
+      if (container.textContent.includes('~50') && container.textContent.includes('Years Manufacturing')) {
+        container.style.flexWrap = isMobile ? "wrap" : "";
+        container.style.gap = isMobile ? "12px" : "40px";
+        container.querySelectorAll('[style*="font-size:52px"], [style*="fontSize:52px"]').forEach(function(el) {
+          el.style.fontSize = isMobile ? "28px" : "52px";
+        });
+      }
+    });
   }
 
   applyMobile();

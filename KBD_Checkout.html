@@ -799,5 +799,46 @@ function App() {
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
+<script>
+(function(){
+  var mql = window.matchMedia("(max-width: 640px)");
+
+  function applyMobile() {
+    var isMobile = mql.matches;
+
+    // Collapse main checkout layout (1fr 360px → 1fr)
+    document.querySelectorAll('[style*="1fr 360px"]').forEach(function(el) {
+      el.style.gridTemplateColumns = isMobile ? "1fr" : "1fr 360px";
+    });
+
+    // Collapse cart item rows (88px 1fr auto → 1fr)
+    document.querySelectorAll('[style*="88px 1fr auto"]').forEach(function(el) {
+      el.style.gridTemplateColumns = isMobile ? "1fr" : "88px 1fr auto";
+    });
+
+    // Wrap security badges on mobile
+    var badgeRow = document.querySelector('nav [style*="gap: 16px"]');
+    if (badgeRow && badgeRow.querySelector('svg')) {
+      badgeRow.style.flexWrap = isMobile ? "wrap" : "";
+      badgeRow.style.gap = isMobile ? "8px" : "16px";
+      if (isMobile) {
+        badgeRow.querySelectorAll('span').forEach(function(s) { s.style.fontSize = "10px"; });
+      }
+    }
+
+    // Wrap step bar on mobile
+    var stepBar = document.querySelector('[style*="padding: 20px 0"]');
+    if (stepBar && stepBar.querySelector('[style*="28px"][style*="50%"]')) {
+      stepBar.style.flexWrap = isMobile ? "wrap" : "";
+      stepBar.style.gap = isMobile ? "8px" : "0";
+    }
+  }
+
+  applyMobile();
+  mql.addEventListener("change", applyMobile);
+  var observer = new MutationObserver(applyMobile);
+  observer.observe(document.body || document.documentElement, { childList: true, subtree: true });
+})();
+</script>
 </body>
 </html>

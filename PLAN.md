@@ -1,66 +1,88 @@
-# Plan — Cross-Page Header Standardization + Mobile Fixes
+# Plan — Mobile Polish: Header, Cart, About Hero, Track Order, Dropdown
 
-> Standardize cart/hamburger layout across all pages, fix Blog/Order-Status mobile, fix About hero clipping.
+> Fix 6 mobile issues across the prototype: header spacing, hero stats clipping, cart mobile, Track Order relocation, dropdown positioning.
 
 ## Goal
-Every page with a nav bar has: Cart icon at far right, hamburger just to its left. All pages with unique grid layouts get mobile collapse. No horizontal overflow or clipped text at 375px.
+All pages have Cart flush-right with hamburger adjacent-left, Track Order lives in hamburger dropdown only, hamburger dropdown opens cleanly below nav bar, About hero stats fit without clipping, Cart page is mobile-usable.
 
-## Approach
-Four independent work streams, all mechanical (copy established patterns). Header fix is a one-line inline style addition (`marginLeft:'auto'`) to 4 pages missing it. Blog and Order-Status get the same enhanced MutationObserver pattern T-015 established for About. About hero gets font-size reduction + padding reduction in the existing MO. Tests added for all new behavior.
+## Issues
+
+### 1. Homepage header spacing
+**Root cause:** Cart + hamburger sit inside a right-actions wrapper `div` with `gap:'12px'` adding extra padding. On mobile the nav padding is 12px but the wrapper gap adds more. Other pages have Track Order/Cart/hamburger as direct children of the nav flex container — no extra wrapper.
+**Fix:** Remove the right-actions wrapper on Homepage, place children directly in nav flex container (same structure as all other pages).
+
+### 2. About hero stats row clipping
+**Root cause:** The MO selector `[style*="gap: 40px"]` matches the first editorial article (which also has `gap:'40px'`), not the hero stats row. The wrap/reduce-gap never fires. Also the stat values at `fontSize:'52px'` are too large for mobile even when wrapped.
+**Fix:** Replace with data-attribute targeting. Reduce stat font-size on mobile in the MO.
+
+### 3. Cart page mobile
+**Root cause:** Checkout has no responsive rules — form grid, cart items, step bar, and security badges all overflow on 375px. The nav has 4 security badges in a row that don't collapse. The Order Summary sidebar doesn't stack. No hamburger (by design — it's a flow page).
+**Fix:** Add page-specific MO collapsing main layout grid (`1fr 320px`?), security badges to wrap, cart items to stack. Keep nav minimal (no hamburger needed on checkout flow).
+
+### 4. Track Order → hamburger
+**Root cause:** Track Order is a visible icon+label in the nav on all pages. User wants it only in the hamburger dropdown.
+**Fix:** Remove Track Order `<a>` from nav on all pages. Add `['KBD_Order_Status.html','Track Order']` to each hamburger dropdown menu. Affects: Homepage, Results, Product, Equipped, Will_Make_It, kbd-shell.jsx (About/Blog/Order-Status).
+
+### 5. Hamburger dropdown positioning
+**Root cause:** On Homepage, the dropdown is rendered inside the right-actions wrapper div, making `position:absolute, top:64px` relative to the wrapper (which is already 64px down inside the nav). It opens 128px from the nav top — midway through the header.
+**Fix:** Move dropdown to be a direct child of `<nav>` (same position as all other pages).
+
+### 6. Equipped-print — untested
+**Root cause:** Not in PAGES_WITH_NAV, not in PAGES_WITHOUT_NAV with proper tests. Has its own inline nav with hardcoded hamburger CSS that may not work.
+**Fix:** Verify its current state, add to test coverage if applicable.
 
 ## Files that will change
 
-| File | Change | Stream |
+| File | Change | Issue |
 |---|---|---|
-| `KBD_Homepage.html` | Add `marginLeft:'auto'` to hamburger button style | A — Header |
-| `KBD_Product.html` | Add `marginLeft:'auto'` to hamburger button style | A — Header |
-| `KBD_Equipped.html` | Add `marginLeft:'auto'` to hamburger button style | A — Header |
-| `KBD_Equipped-print.html` | Add `marginLeft:'auto'` to hamburger button style | A — Header |
-| `KBD_About.html` | Reduce hero h1 clamp min to 36px, reduce vertical padding; add to existing MO | B — About hero |
-| `KBD_Blog.html` | Replace old MO with enhanced MO (nav + grid collapse); add content-width test | C — Blog mobile |
-| `KBD_Order_Status.html` | Replace old MO with enhanced MO (nav + grid collapse); add content-width test | D — Order-Status mobile |
-| `tests/mobile.spec.mjs` | Add Blog/Order-Status layout tests, header hamburger position test, About hero width test | All |
+| `KBD_Homepage.html` | Remove right-actions wrapper, move dropdown outside it, remove Track Order, add to hamburger items | 1, 4, 5 |
+| `KBD_Results.html` | Remove Track Order link, add to hamburger dropdown | 4 |
+| `KBD_Product.html` | Remove Track Order link, add to hamburger dropdown | 4 |
+| `KBD_Equipped.html` | Remove Track Order link, add to hamburger dropdown | 4 |
+| `KBD_Will_Make_It.html` | Remove Track Order link, add to hamburger dropdown | 4 |
+| `kbd-shell.jsx` | Remove Track Order link, add to hamburger dropdown | 4 |
+| `KBD_About.html` | Fix hero stats MO selector, reduce stat font-size on mobile | 2 |
+| `KBD_Checkout.html` | Add mobile MO, collapse layouts, wrap security badges | 3 |
+| `tests/mobile.spec.mjs` | Add Checkout mobile tests, update hamburger tests for Track Order removal, add About stats test | All |
 
-## Phases (execution order)
+## Phases
 
-### Stream A — Header standardization (mechanical, 4 pages)
-1. Add `marginLeft:'auto'` to hamburger inline style in Homepage, Product, Equipped, Equipped-print
-2. Add Playwright test: hamburger is to the left of Cart on all PAGES_WITH_NAV
+### Phase 1 — Track Order → hamburger (6 files, mechanical)
+- Remove `<a href="KBD_Order_Status.html">...Track Order</a>` from nav in all inline navs + kbd-shell.jsx
+- Add `['KBD_Order_Status.html','Track Order']` to each hamburger dropdown items array
+- Update any MO that references `nav-desktop-only` Track Order elements (they'll be removed)
 
-### Stream B — About hero clipping
-1. In existing MO: also reduce h1 font-size and hero section padding at ≤640px
-2. Add Playwright test: no heading width exceeds viewport width
+### Phase 2 — Homepage header restructure
+- Remove right-actions wrapper div, flatten children into nav flex container
+- Move dropdown {menuOpen && ...} to be direct child of `<nav>`
+- Ensure hamburger + Cart are the last two children
 
-### Stream C — Blog mobile
-1. Replace old MO with enhanced MO collapsing: `1.4fr 1fr`→`1fr`, `1fr 240px`→`1fr`, `200px 1fr`→`1fr`
-2. Remove duplicated @media blocks from `<style>`
-3. Add Playwright tests: grid collapse + content readable
+### Phase 3 — Cart page mobile
+- Add MO collapsing checkout layouts + security badges wrapping
+- TBD after deeper code read
 
-### Stream D — Order Status mobile
-1. Replace old MO with enhanced MO collapsing: `1fr 320px`→`1fr`, `1fr 1fr auto`→`1fr`
-2. Remove duplicated @media blocks from `<style>`
-3. Add Playwright tests: grid collapse + content readable
+### Phase 4 — About hero stats fix
+- Fix MO to target hero stats row specifically (use parent section selector)
+- Reduce stat font-size to `clamp(24px,5vw,52px)` in MO
 
-### Final — Gate
-- Run full `npx playwright test --reporter=line`
-- Commit + push all changes
+### Phase 5 — Tests + gate
+- Update hamburger dropdown tests to include "Track Order" item
+- Add Checkout mobile content-width test
+- Add About hero stats no-clip test
+- Run full Playwright suite
 
 ## Acceptance criteria
-- [ ] Homepage hamburger has `marginLeft:'auto'` (flush right, Cart to its right)
-- [ ] Product hamburger has `marginLeft:'auto'`
-- [ ] Equipped hamburger has `marginLeft:'auto'`
-- [ ] Equipped-print hamburger has `marginLeft:'auto'`
-- [ ] About hero h1 fits within viewport at 375px (no clipped text)
-- [ ] Blog featured article grid collapses to 1 column at 375px
-- [ ] Blog post layout (1fr 240px) collapses to 1 column at 375px
-- [ ] Blog related article cards (200px 1fr) collapse to 1 column at 375px
-- [ ] Order Status main layout (1fr 320px) collapses to 1 column at 375px
-- [ ] Order Status form row (1fr 1fr auto) collapses to 1 column at 375px
-- [ ] All PAGES_WITH_NAV: hamburger visible, nav-links hidden on mobile
-- [ ] No pages broken, 0 console errors
-- [ ] All Playwright tests pass
+- [ ] Track Order absent from visible nav on all 7 pages (Homepage/Results/Product/Equipped/Will_Make_It/About/Blog)
+- [ ] "Track Order" present in hamburger dropdown on all 7 pages
+- [ ] Homepage Cart + hamburger flush right (no extra spacing)
+- [ ] Homepage dropdown opens directly below nav bar
+- [ ] About hero stats row wraps and fits within viewport at 375px
+- [ ] Cart page no horizontal overflow at 375px
+- [ ] Cart page content readable widths at 375px
+- [ ] 0 Playwright failures, 0 console errors
 
 ## Not in scope
-- Checkout page — it has a minimal checkout Nav with no hamburger; it's a flow, not a browse page
-- Full CSS dedup on all pages (Blog/Order-Status only; others have pre-existing dupes tracked separately)
-- Desktop layout changes — all changes are mobile-only (≤640px)
+- Order Status page already uses the shell; its Track Order link is in-content, not nav
+- Checkout hamburger (by design — checkout flow should be distraction-free)
+- Equipped-print — has no hamburger nor nav links; add basic test coverage only
+- Full Equipped-print mobile overhaul

@@ -10,6 +10,7 @@ function Nav({ active }) {
     ['KBD_Will_Make_It.html', 'Will Make It'],
     ['KBD_About.html',        'About'],
     ['KBD_Blog.html',         'Blog'],
+    ['KBD_Order_Status.html', 'Track Order'],
   ];
   const cartCount = (()=>{ try { return JSON.parse(localStorage.getItem('kbd_cart')||'[]').reduce((s,i)=>s+(i.qty||1),0); } catch { return 0; } })();
 
@@ -36,10 +37,6 @@ function Nav({ active }) {
             );
           })}
         </div>
-        <a href="KBD_Order_Status.html" style={{ color:'#aaa', fontSize:'13px', textDecoration:'none', display:'flex', alignItems:'center', gap:'6px', whiteSpace:'nowrap' }}>
-          <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          <span className="nav-desktop-only">Track Order</span>
-        </a>
         <button className="nav-hamburger" onClick={() => setMenuOpen(!menuOpen)} style={{ marginLeft: 'auto', background:'transparent', border:'1px solid #333', borderRadius:'6px', color:'#aaa', padding:'8px 10px', cursor:'pointer', flexDirection:'column', gap:'4px', alignItems:'center', justifyContent:'center', display:'none' }} aria-label="Menu">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />

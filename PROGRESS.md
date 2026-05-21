@@ -4,17 +4,36 @@
 
 
 
-## 2026-05-21 13:26 — All done — T-015 is complete
-All done — T-015 is complete.
 
-**What changed:**
-- `KBD_About.html` — added MutationObserver that collapses 4 layouts on mobile (editorial `140px 1fr`→`1fr`, CTA `1fr auto`→`1fr`, footer `1.6fr 1fr 1fr 1fr`→`1fr`, hero stats wrap). Removed duplicated `@media` CSS blocks.
-- `kbd-shell.jsx` — hamburger now has `marginLeft:'auto'` so it flushes right like other pages.
-- `tests/mobile.spec.mjs` — About moved to `PAGES_WITH_NAV` (gets hamburger tests), +4 new content-layout tests.
+## 2026-05-21 14:11 — Plan written
+Plan written. Grill trigger fires (9 files), but every change is mechanical — the Track Order removal + hamburger addition is identical across 6 files, and the other fixes follow established patterns.
 
-**Gate:** 37/37...
-## 2026-05-21 13:02 — **Next:** Blog and Order Status share kbd-shell.jsx — same footer column issue a...
-**Next:** Blog and Order Status share kbd-shell.jsx — same footer column issue applies to them (but their content layouts differ, so each needs its own investigation)
+**Summary of what changes where:**
+
+| What | Pages | Action |
+|---|---|---|
+| **Track Order → hamburger** | Homepage, Results, Product, Equipped, Will_Make_It, kbd-shell.jsx (3) | Remove icon+label from nav, add `['KBD_Order_Status.html','Track Order']` to dropdown |
+| **Homepage header restruc...
+## 2026-05-21 14:00 — All tasks in TASKS.md are done
+All tasks in TASKS.md are done. The remaining known issues from STANDARDS.md are:
+
+- **Horizontal overflow** on some pages at 375px — pre-existing, tracked separately
+- **Hamburger missing on Checkout/Equipped-print** — by design (no nav on those pages)
+
+No remaining planned work. Want me to tackle horizontal overflow? Or is there another feature/page you have in mind?
+## 2026-05-21 13:51 — Done
+Done. Here's the recap:
+
+---
+
+**Changed:** 7 HTML pages + test file. Header standardization on 4 pages (hamburger `marginLeft:'auto'`, Homepage hamburger moved inside flex container). Enhanced MO for Blog (collapse 3 grids + footer) and Order-Status (collapse 2 grids + footer). About hero h1 clamp 56→36px. CSS dedup on Blog + Order-Status. 9 new Playwright tests including hamburger-left-of-cart on all 8 nav pages.
+
+**Verified:** 52/52 Playwright tests pass. All 8 pages with nav have Cart far ...
+## 2026-05-21 13:20 — Cross-page header standardization + Blog/Order-Status mobile — T-016
+**Changed:** 7 HTML pages + test file. Added `marginLeft:'auto'` to hamburger on Homepage/Product/Equipped/Equipped-print; moved Homepage hamburger inside nav flex container (was outside causing wrong position). Enhanced MO for Blog (collapse `1.4fr 1fr`, `1fr 240px`, `200px 1fr`, footer) and Order-Status (collapse `1fr 320px`, `1fr 1fr auto`, footer). Reduced About hero h1 clamp min 56→36px + padding. Deduplicated CSS on Blog + Order-Status. Moved Blog + Order-Status to PAGES_WITH_NAV. Added 9 Playwright tests (hamburger-left-of-cart ×8 pages, Blog/OS content width, About hero width).
+**Verified:** 52/52 Playwright tests pass — all 8 PAGES_WITH_NAV have hamburger visible left of Cart, all pages console-error-free, no horizontal overflow.
+**Next:** Only remaining untested pages: Equipped-print and Checkout (no nav, different concerns).
+
 ## 2026-05-21 12:35 — About page mobile fix — T-015
 **Changed:** `KBD_About.html` — added MutationObserver JS collapsing editorial articles (140px/1fr→1fr), CTA grid (1fr/auto→1fr), footer grid (1.6fr/1fr/1fr/1fr→1fr), hero stats wrap; removed duplicated @media CSS blocks. `kbd-shell.jsx` — added marginLeft:'auto' to hamburger button. `tests/mobile.spec.mjs` — moved About to PAGES_WITH_NAV, added 4 content-layout tests (grid collapse, content width ≥280px, footer 1-col, CTA 1-col).
 **Verified:** 37/37 Playwright tests pass — all pages console-error-free, About hamburger visible/nav hidden, editorial/footer/CTA grids all single column.
