@@ -10,6 +10,10 @@
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <script type="text/babel" src="tweaks-panel.jsx"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -137,7 +141,7 @@ const { useState, useEffect, useRef, useCallback } = React;
 const U = (id, w=900) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=85`;
 const igUrl = (handle) => `https://instagram.com/${handle.replace(/^@/,'')}`;
 
-// ── BUILD DATA ─────────────────────────────────────────────────────────────
+// ── BUILD DATA ────────────────────────────────────────────────────────���────
 const BUILDS = [
   {
     id:1, owner:'@rob_nappyboyautomotive', car:'1995 Nissan 240SX S14 Zenki', date:'April 2026', location:'Los Angeles, CA',
