@@ -7,6 +7,17 @@
 
 
 
+
+<!-- session-in-progress:start=2026-05-21T20:41:46.027Z -->
+## 2026-05-21 15:48 — Done _(in progress)_
+Done. `2ac4885` on `main`.
+
+**Changed:** 7 Nav components + kbd-shell.jsx — added `useEffect` with document-level `click`/`touchstart` handlers that close the hamburger dropdown when tapping outside. Results page got a second handler for the YMM vehicle selector dropdown.
+
+**Verified:** 52/52 Playwright tests pass. No regressions.
+
+**Next:** Nothing pending.
+<!-- end-session-in-progress -->
 ## 2026-05-21 15:41 — ## Step 2 — Summarize
 
 ```
