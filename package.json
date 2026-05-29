@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "playwright": "^1.60.0",
     "playwright-core": "^1.60.0"
   },
