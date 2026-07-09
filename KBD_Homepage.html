@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KBD Body Kits — Premium Polyurethane Body Kits, Made in USA</title>
@@ -11,6 +12,7 @@
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 <script type="text/babel" src="tweaks-panel.jsx"></script>
+<script defer src="assets/analytics.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -455,9 +457,8 @@ function Hero({ tweaks }) {
   useEffect(() => {
     const vid = videoRef.current;
     if (!vid) return;
-    const onCanPlay = () => { setVideoReady(true); vid.play().catch(() => {}); };
+    const onCanPlay = () => setVideoReady(true);
     vid.addEventListener('canplay', onCanPlay);
-    vid.load();
     return () => vid.removeEventListener('canplay', onCanPlay);
   }, []);
 
@@ -468,7 +469,7 @@ function Hero({ tweaks }) {
       overflow: 'hidden'
     }}>
       {/* Video background */}
-      <video ref={videoRef} muted loop playsInline preload="none"
+      <video ref={videoRef} autoPlay muted loop playsInline preload="auto"
         className="hero-video"
         style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', opacity:videoReady?1:0, transition:'opacity 0.8s ease', zIndex:0 }}>
         <source src="assets/hero-bg.mp4" type="video/mp4"/>
