@@ -2,6 +2,8 @@
 
 > A clickable 10-page HTML/React prototype pitching a modern motorsport storefront to KBD Body Kits — a ~50-year-old polyurethane body kit manufacturer in Fullerton, CA.
 
+**Live:** https://kbd-bodykits.vercel.app/KBD_Homepage.html
+
 ---
 
 ## What this is
@@ -40,6 +42,18 @@ Irving's current site looks 15 years old and is losing customers to better-prese
 | **About** | Heritage, manufacturing, team, and values |
 | **Blog** | Editorial content and build features |
 | **Order Status** | Order lookup (simulated) |
+
+---
+
+## Screenshots
+
+| Homepage | Product |
+| --- | --- |
+| ![Homepage](docs/screenshots/homepage.png) | ![Product](docs/screenshots/product.png) |
+
+| Results | Checkout |
+| --- | --- |
+| ![Results](docs/screenshots/results.png) | ![Checkout](docs/screenshots/checkout.png) |
 
 ---
 

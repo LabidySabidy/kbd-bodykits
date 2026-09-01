@@ -17,3 +17,22 @@ node_modules
 # OS
 Thumbs.db
 .DS_Store
+
+# Agent / planning docs (local only)
+.agent/
+.claude/
+.cursor/
+.taskmaster/
+openspec/
+PLAN.md
+TASKS.md
+PROGRESS.md
+LESSONS.md
+LANGUAGE.md
+VISION.md
+DECISIONS.md
+AGENTS.md
+STANDARDS.md
+CLAUDE.md
+PROMPT_FOR_PI.md
+DESIGN_PROMPT.md
